@@ -35,7 +35,17 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         //TODO: Add console logging of each step
         //TODO: Wait for NetworkTables connection4
+        while(!NetworkTableInstance.getDefault().isConnected());
+
         //TODO: Initialize Dashboard values
+        Chassis.initDashboard();
+        Elevator.initDashboard();
+        Manipulator.initDashboard();
+        Disabled.initDashboard();
+        Autonomous.initDashboard();
+        Teleoperated.initDashboard();
+        Test.initDashboard();
+
         Chassis.init();
         Elevator.init();
         Manipulator.init();
@@ -44,6 +54,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         ButtonManager.updateValues();
+        Chassis.pushDashboardValues();
     }
 
     @Override

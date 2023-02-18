@@ -35,13 +35,19 @@ public class Chassis {
     private Chassis(){}
 
     public static void init() {
+        //sets motors to follow other motors
+        mtrDrive_L2.follow(mtrDrive_L1);
+        mtrDrive_R2.follow(mtrDrive_R1);
+
         //Configure motor inversions
-        mtrDrive_L1.setInverted(false);
-        mtrDrive_L2.setInverted(false);
-        mtrDrive_R1.setInverted(true);
-        mtrDrive_R2.setInverted(true);
+        mtrDrive_L1.setInverted(true);
+        mtrDrive_L2.setInverted(true);
+        mtrDrive_R1.setInverted(false);
+        mtrDrive_R2.setInverted(false);
 
         //TODO: Configure Encoders (skip(math))
+        encDrive_L.configDistancePerPulse(((1.00/(5.8226))/2048.00)*(4.00*Math.PI));
+        encDrive_L.reset();
     }
 
     public static void initDashboard() {
@@ -49,8 +55,18 @@ public class Chassis {
     }
 
     public static void pushDashboardValues() {
-        //TODO: Update Dashborad Entries (skippppp)
+        //Update Dashborad Entries
+        entDrive_Distance.set(encDrive_L.getDistance());
     }
+
+    public static void resetDistance(){
+        encDrive_L.reset();
+    }
+
+    public static double getDistance(){
+        return encDrive_L.getDistance();
+    }
+
 
     //Create a setDrive function
     public static void setDrive(double powerLeft, double powerRight){
@@ -61,8 +77,8 @@ public class Chassis {
     public static void periodic() {
         //Update components
         mtrDrive_L1.set(ControlMode.PercentOutput, mChassisPower_L);
-        mtrDrive_L2.set(ControlMode.PercentOutput, mChassisPower_L);
+        //mtrDrive_L2.set(ControlMode.PercentOutput, mChassisPower_L);
         mtrDrive_R1.set(ControlMode.PercentOutput, mChassisPower_R);
-        mtrDrive_R2.set(ControlMode.PercentOutput, mChassisPower_R);
+        //mtrDrive_R2.set(ControlMode.PercentOutput, mChassisPower_R);
     }
 }
