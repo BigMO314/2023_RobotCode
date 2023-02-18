@@ -1,21 +1,24 @@
 package frc.robot.subsystem;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.NetworkTable;
 import frc.molib.PIDController;
 import frc.molib.dashboard.Entry;
+import frc.molib.sensors.DigitalInput;
 import frc.molib.sensors.MagEncoder;
 import frc.robot.Robot;
 
-/**
- * Enumerations are a list of things, one by one. 
- */
+
+ /** Elevator moves the Manipulator up or down. */ 
+ 
 public class Elevator {
 
     /**
-     * Presets the height the elevator will go up to. 
+     * Preset heights the elevator will go up to. 
      */
     enum Height {
         LOW(20.0),
@@ -28,31 +31,28 @@ public class Elevator {
         }
     }
     
-    /*
-     * Network Table is the communication between the robot and the driver station. 
-     */
+    // Network Table is the communication between the robot and the driver station. 
+    
     private static NetworkTable tblElevator = Robot.tblSubsystem.getSubTable("Elevator");
 
-    //Create Dashboard Entries
+    //Create Dashboard Entries.
     private static Entry<Double> entLift_Height = new Entry<Double>(tblElevator, "Lift Height");
 
-    /*
-     * //Create the Falcons, PID, and Encoder for the Elevator.
-     */
+    //Create the Falcons, PID, and Encoder for the Elevator.
     
-    private static WPI_TalonFX mtrElevator = new WPI_TalonFX(4);
+    private static WPI_TalonFX mtrLift = new WPI_TalonFX(4);
 
-    private static PIDController pidElevator_Height = new PIDController(0.0, 0.0, 0.0);
+    private static PIDController pidLift_Height = new PIDController(0.0, 0.0, 0.0);
 
-    private static MagEncoder encElevator = new MagEncoder(mtrElevator);
+    private static MagEncoder encLift = new MagEncoder(mtrLift);
 
-    
+    private static final DigitalInput phoLift = new DigitalInput(0, true);    
 
     //Create buffer variables
-    private static double mElevatorPower = 0.0; 
+    private static double mLiftPower = 0.0; 
 
     /**
-     * Constructor: Special type of class that is used to create a new object.
+     * Constructor: Private so that it cannot instantiate.
      */
     private Elevator(){}
 
@@ -61,63 +61,105 @@ public class Elevator {
      */
     public static void init() {
         
+        //Configuring the motors. 
+        mtrLift.setInverted(false); 
+        mtrLift.setNeutralMode(NeutralMode.Brake);
 
-    /*
-    //Motors, Sensors. 
-    */
-        mtrElevator.setInverted(false); 
+        mtrLift.configReverseSoftLimitThreshold(0.0);
+        mtrLift.configForwardSoftLimitThreshold(0.0);
+        mtrLift.configReverseSoftLimitEnable(true);
+        mtrLift.configForwardSoftLimitEnable(true);
+        
+         //Configure Sensors FIXME: Determine Lift distancePerPulse.
+         encLift.configDistancePerPulse(1.0);
 
+         //Configure PIDS
+        pidLift_Height.setTolerance(0.25);
+        pidLift_Height.configAtSetpointTime(0.125);
+        pidLift_Height.configOutputRange(-1.0, 1.0);
     }
 
+    // Initializing dashboard options. 
     public static void initDashboard() {
-
+    
     }
 
-    //Create setLiftPower(double), goToHeight(double), and disableLift() functions
-    
+    /**Push new values to dashboard objects.*/
+    public static void pushDashboardValues(){
+        //Push Sensor Values.
+        entLift_Height.set(getLiftHeight());
+    }
+
+    /** Reset Lift encoder distance.*/
+    public static void resetLiftHeight() {encLift.reset(); }
+
     /**
-     * Starts the elevator power. 
-     * @param power
+     * Read the height of the Lift since last reset.
+     * @param power Height in inches
+     */
+    public static double getLiftHeight() {return encLift.getDistance(); }
+
+    /**
+     * Read whether the Lift is at its bottom limit.
+     * @param power True if the bottom photoeye is tripped. 
+     */
+    public static boolean isLiftAtBottom() { return phoLift.get(); }
+
+
+    /**
+     * Sets the Elevator power. 
+     * @param power [-1.0. 1.0] Power to the Lift.
      */
     public static void setLiftPower(double power){
-        mElevatorPower = power;
+        mLiftPower = power;
     } 
 
 
     /**
-     * Enabling pid and giving it its target.
-     * @param height in inches, target in inches.
+     * Enabling PID and gives the Elevator a certain position to move to.
+     * @param height target in inches.
      */
     public static void goToHeight(double height){
-        pidElevator_Height.setSetpoint(height);
-        pidElevator_Height.enable();
+        pidLift_Height.setSetpoint(height);
+        pidLift_Height.enable();
     }
 
     /**
-     * Enables pid and gives the elevator a certain position to move to. 
-     * @param position inches away from target. 
+     * Enables PID and gives the Elevator a certain position to move to. 
+     * @param position target position. 
      */
     public static void goToHeight(Height position) {
         goToHeight(position.height);
     }
 
     /**
-     *  Elevator moves up until it reaches said height. 
-     * @return
+     * Checks itself to see if the elevator is at target height. 
+     * @return true if elevator is at set height
      */
     public static boolean isAtHeight(){
-        return pidElevator_Height.atSetpoint();
+        return pidLift_Height.atSetpoint();
     }
 
     /**
-     * Elevator stops moving up after reaching height. 
+     * Disables PID control. 
      */
     public static void disableHeightPID(){
-        pidElevator_Height.disable();
+        pidLift_Height.disable();
+    }
+
+    /** Disable all PID control of the Elevator */
+    public static void disablePIDs(){
+        disableHeightPID();
+    }
+    
+    /** Disable all PID control of the Elevator and stop the Lift motors. */
+    public static void disable(){
+        disablePIDs();
+        disableLift();
     }
 
     /**
-     * Elevator is completely disabled. 
+     * Lift motor is turned off. 
      */
     public static void disableLift(){
         setLiftPower(0.0);
@@ -127,13 +169,17 @@ public class Elevator {
      * Updates motors, automatic system.
      */
     public static void periodic() {
-
-        if(pidElevator_Height.isEnabled()){
-            setLiftPower(pidElevator_Height.calculate(encElevator.getDistance()));
+   
+        //PID is override. 
+        if(pidLift_Height.isEnabled()){
+            setLiftPower(pidLift_Height.calculate(encLift.getDistance()));
         }
 
-    //Update components
-        mtrElevator.set(ControlMode.PercentOutput, mElevatorPower);
-    }
+        //Safety Checks
+        if(isLiftAtBottom())
+            MathUtil.clamp(mLiftPower, 0.0, Double.POSITIVE_INFINITY);
 
+    //Update components
+        mtrLift.set(ControlMode.PercentOutput, mLiftPower);
+    }
 }
