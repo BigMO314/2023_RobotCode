@@ -20,7 +20,7 @@ public class Elevator {
     /**
      * Preset heights the elevator will go up to. 
      */
-    enum Height {
+    public enum Height {
         LOW(20.0),
         MIDDLE(35.0),
         HIGH(50.0);
@@ -37,16 +37,17 @@ public class Elevator {
 
     //Create Dashboard Entries.
     private static Entry<Double> entLift_Height = new Entry<Double>(tblElevator, "Lift Height");
+    private static Entry<Boolean> entLift_Bottom = new Entry<Boolean>(tblElevator, "Lift Bottom");
 
     //Create the Falcons, PID, and Encoder for the Elevator.
     
-    private static WPI_TalonFX mtrLift = new WPI_TalonFX(4);
+    private static WPI_TalonFX mtrLift = new WPI_TalonFX(6);
 
     private static PIDController pidLift_Height = new PIDController(0.0, 0.0, 0.0);
 
     private static MagEncoder encLift = new MagEncoder(mtrLift);
 
-    private static final DigitalInput phoLift = new DigitalInput(0, true);    
+    private static final DigitalInput phoLift = new DigitalInput(1, true);    
 
     //Create buffer variables
     private static double mLiftPower = 0.0; 
@@ -67,13 +68,13 @@ public class Elevator {
 
         mtrLift.configReverseSoftLimitThreshold(0.0);
         mtrLift.configForwardSoftLimitThreshold(0.0);
-        mtrLift.configReverseSoftLimitEnable(true);
-        mtrLift.configForwardSoftLimitEnable(true);
+        mtrLift.configReverseSoftLimitEnable(false);
+        mtrLift.configForwardSoftLimitEnable(false);
         
-         //Configure Sensors FIXME: Determine Lift distancePerPulse.
-         encLift.configDistancePerPulse(1.0);
+        //Configure Sensors FIXME: Determine Lift distancePerPulse.
+        encLift.configDistancePerPulse(1.0);
 
-         //Configure PIDS
+        //Configure PIDS
         pidLift_Height.setTolerance(0.25);
         pidLift_Height.configAtSetpointTime(0.125);
         pidLift_Height.configOutputRange(-1.0, 1.0);
@@ -88,6 +89,7 @@ public class Elevator {
     public static void pushDashboardValues(){
         //Push Sensor Values.
         entLift_Height.set(getLiftHeight());
+        entLift_Bottom.set(isLiftAtBottom());
     }
 
     /** Reset Lift encoder distance.*/
@@ -169,7 +171,7 @@ public class Elevator {
      * Updates motors, automatic system.
      */
     public static void periodic() {
-   
+        
         //PID is override. 
         if(pidLift_Height.isEnabled()){
             setLiftPower(pidLift_Height.calculate(encLift.getDistance()));

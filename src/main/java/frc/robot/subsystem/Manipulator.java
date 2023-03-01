@@ -22,8 +22,8 @@ public class Manipulator {
     private static Entry<Double> entManipulator_Position = new Entry<Double>(tblManipulator, "Manipulator Position");
 
     //Creates components (motor and solenoid)
-    private static Solenoid solArm = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
-    private static Solenoid solGrip = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+    private static Solenoid solArm = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+    private static Solenoid solGrip = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
     
     //Set buffer/starting values so nothing goes zoom zoom until its told to zoom zoom
     private static boolean mArmIsExtended = false;
