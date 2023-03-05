@@ -38,9 +38,9 @@ public class Test {
     public static void periodic() {
         //controller drive chassis basic test version
         if(ctlTester.getRightBumper()){
-            Elevator.setLiftPower(0.10);
+            Elevator.setLiftPower(0.25);
         } else if (ctlTester.getRightTrigger()){
-            Elevator.setLiftPower(-0.10);
+            Elevator.setLiftPower(-0.25);
         } else{
             Elevator.setLiftPower(0.00);
         }

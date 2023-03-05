@@ -63,36 +63,48 @@ public class Teleoperated {
     private static SendableChooser<DriveMode> chsDriveMode = new SendableChooser<DriveMode>();
 
     //Xbox controllers
-    private static XboxController ctlDriver = new XboxController(1);
-    private static XboxController ctlOperator = new XboxController(2);
+    private static XboxController ctlDriver = new XboxController(0);
+    private static XboxController ctlOperator = new XboxController(1);
 
     //Buttons
     private static final Button btnElevator_Top = new Button() {
-        @Override public boolean get() { return super.get();/* conditions for true here, tbd */}
+        @Override public boolean get() { return ctlOperator.getYButton();}
     };
 
     private static final Button btnElevator_Middle = new Button() {
-        @Override public boolean get() { return super.get();/* conditions for true here,tbd */}
+        @Override public boolean get() { return ctlOperator.getBButton();}
+    };
+
+    private static final Button btnElevator_Portal = new Button() {
+        @Override public boolean get() { return ctlOperator.getXButton();}
     };
 
     private static final Button btnElevator_Bottom = new Button() {
-        @Override public boolean get() { return super.get();/* conditions for true here, tbd */}
+        @Override public boolean get() { return ctlOperator.getAButton();}
     };
 
     private static final Button btnElevator_Up = new Button() {
-        @Override public boolean get() { return super.get();/* conditions for true here, tbd */}
+        @Override public boolean get() { return ctlOperator.getPOV() == 0; }
     };
 
     private static final Button btnElevator_Down = new Button() {
-        @Override public boolean get() { return super.get();/* conditions for true here, tbd */}
+        @Override public boolean get() { return ctlOperator.getPOV() == 180;}
     };
 
     private static final Button btnManipulator_Extend = new Button() {
-        @Override public boolean get() { return super.get();/* conditions for true here, tbd */}
+        @Override public boolean get() { return ctlOperator.getLeftTrigger();}
+    };
+
+    private static final Button btnManipulator_Retract = new Button() {
+        @Override public boolean get() { return ctlOperator.getRightTrigger();}
     };
 
     private static final Button btnManipulator_Open = new Button() {
-        @Override public boolean get() { return super.get();/* conditions for true here, tbd */}
+        @Override public boolean get() { return ctlOperator.getRightBumper();}
+    };
+
+    private static final Button btnManipulator_Close = new Button() {
+    @Override public boolean get() { return ctlOperator.getLeftBumper();}
     };
 
     private static final Button btnChassis_Precision = new Button() {
@@ -182,14 +194,16 @@ public class Teleoperated {
         //TEMPORARY NUMBERS!!!
         if(btnElevator_Up.get()){
             Elevator.disableHeightPID();
-            Elevator.setLiftPower(0.20);
+            Elevator.setLiftPower(0.40);
         } else if(btnElevator_Down.get()){
             Elevator.disableHeightPID();
-            Elevator.setLiftPower(0.20);
+            Elevator.setLiftPower(-0.40);
         } else if(btnElevator_Top.getPressed()){
             Elevator.goToHeight(Elevator.Height.HIGH);
         } else if(btnElevator_Middle.getPressed()){
             Elevator.goToHeight(Elevator.Height.MIDDLE);
+        } else if(btnElevator_Portal.getPressed()){
+            Elevator.goToHeight(Elevator.Height.PORTAL);            
         } else if(btnElevator_Bottom.getPressed()){
             Elevator.goToHeight(Elevator.Height.LOW);
         } else {
@@ -197,18 +211,16 @@ public class Teleoperated {
         }
 
         //MANIPULATOR
-        if(btnManipulator_Extend.get()){
+        if(btnManipulator_Extend.getPressed()){
             Manipulator.extendArm();
-        } else{
+        } else if(btnManipulator_Retract.getPressed()){
             Manipulator.retractArm();
         }
 
         if(btnManipulator_Open.getPressed()){
-            if(Manipulator.isGripClosed()){
-                Manipulator.openGrip();
-            } else{
-                Manipulator.closeGrip();
-            }
+            Manipulator.openGrip();
+        } else if(btnManipulator_Close.getPressed()){
+            Manipulator.closeGrip();
         }
 
         //Update subsystems

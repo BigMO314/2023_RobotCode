@@ -23,6 +23,7 @@ public class Elevator {
     public enum Height {
         LOW(20.0),
         MIDDLE(35.0),
+        PORTAL(40.0),
         HIGH(50.0);
 
         public final double height;
@@ -38,6 +39,7 @@ public class Elevator {
     //Create Dashboard Entries.
     private static Entry<Double> entLift_Height = new Entry<Double>(tblElevator, "Lift Height");
     private static Entry<Boolean> entLift_Bottom = new Entry<Boolean>(tblElevator, "Lift Bottom");
+    private static Entry<Boolean> entLift_Top = new Entry<Boolean>(tblElevator, "Lift Top");
 
     //Create the Falcons, PID, and Encoder for the Elevator.
     
@@ -47,7 +49,9 @@ public class Elevator {
 
     private static MagEncoder encLift = new MagEncoder(mtrLift);
 
-    private static final DigitalInput phoLift = new DigitalInput(1, true);    
+    private static final DigitalInput phoLift_L = new DigitalInput(0, false);
+    private static final DigitalInput phoLift_U = new DigitalInput(1, false);    
+    
 
     //Create buffer variables
     private static double mLiftPower = 0.0; 
@@ -72,12 +76,12 @@ public class Elevator {
         mtrLift.configForwardSoftLimitEnable(false);
         
         //Configure Sensors FIXME: Determine Lift distancePerPulse.
-        encLift.configDistancePerPulse(1.0);
+        encLift.configDistancePerPulse(((1.0 / 2048.0) / 16.0) * (1.800 * Math.PI) * 2.0);
 
         //Configure PIDS
         pidLift_Height.setTolerance(0.25);
         pidLift_Height.configAtSetpointTime(0.125);
-        pidLift_Height.configOutputRange(-1.0, 1.0);
+        pidLift_Height.configOutputRange(-0.25, 0.25);
     }
 
     // Initializing dashboard options. 
@@ -90,6 +94,7 @@ public class Elevator {
         //Push Sensor Values.
         entLift_Height.set(getLiftHeight());
         entLift_Bottom.set(isLiftAtBottom());
+        entLift_Top.set(isLiftAtTop());
     }
 
     /** Reset Lift encoder distance.*/
@@ -105,8 +110,13 @@ public class Elevator {
      * Read whether the Lift is at its bottom limit.
      * @param power True if the bottom photoeye is tripped. 
      */
-    public static boolean isLiftAtBottom() { return phoLift.get(); }
+    public static boolean isLiftAtBottom() { return phoLift_L.get(); }
 
+    /**
+     * Read whether the Lift is at its top limit.
+     * @param power True if the top photoeye is tripped. 
+     */
+    public static boolean isLiftAtTop() { return phoLift_U.get(); }
 
     /**
      * Sets the Elevator power. 
@@ -178,8 +188,15 @@ public class Elevator {
         }
 
         //Safety Checks
-        if(isLiftAtBottom())
-            MathUtil.clamp(mLiftPower, 0.0, Double.POSITIVE_INFINITY);
+        if(isLiftAtBottom()){
+            mLiftPower = MathUtil.clamp(mLiftPower, 0.0, Double.POSITIVE_INFINITY);
+            resetLiftHeight();
+        }
+        if(isLiftAtTop())
+            mLiftPower = MathUtil.clamp(mLiftPower, Double.NEGATIVE_INFINITY, 0.0);
+
+        
+        
 
     //Update components
         mtrLift.set(ControlMode.PercentOutput, mLiftPower);
