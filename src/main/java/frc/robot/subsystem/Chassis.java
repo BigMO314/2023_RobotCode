@@ -11,6 +11,14 @@ import frc.molib.dashboard.Entry;
 import frc.molib.sensors.MagEncoder;
 import frc.robot.Robot;
 
+/**
+ * The Chassis Subsystem
+ * <p>
+ * Sets up chassis motors, chassis PIDs, chassis gyros, and chassis sensors.
+ * Components relating to chassis, manuvering chassis.
+ * @author Tavares Mance
+ * @author Celia Peters
+ */
 @SuppressWarnings("unused")
 public class Chassis {
 

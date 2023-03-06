@@ -13,9 +13,14 @@ import frc.molib.sensors.MagEncoder;
 import frc.robot.Robot;
 
 
- /** Elevator moves the Manipulator up or down. */ 
- 
-public class Elevator {
+ /**
+ * The Elevator Subsystem
+ * <p>
+ * Sets up elevator motor, elevator PIDs, and elevator sensors.
+ * Components relating to elevator, raising and lowering of elevator.
+ * @author Tavares Mance
+ */
+ public class Elevator {
 
     /**
      * Preset heights the elevator will go up to. 

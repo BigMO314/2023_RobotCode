@@ -12,7 +12,14 @@ import frc.molib.sensors.MagEncoder;
 import frc.robot.Robot;
 
 
-/**Systems relating to game element manipulator. Opening and closing of grip, extension and retraction of arm*/
+/**
+ * The Manipulator Subsystem
+ * <p>
+ * Sets up manipulator solenoids.
+ * Components relating to game element manipulator. Opening and closing of grip,
+ * extension and retraction of arm.
+ * @author Celia Peters
+ */
 @SuppressWarnings("unused")
 public class Manipulator {
 
@@ -113,9 +120,7 @@ public class Manipulator {
     }
 
     /**
-     * Runs on a periodic loop that updates values and runs functions
-     * according to human input, autonomus input, and game conditions.
-     * Can set solenoid position
+     *Values are updated and runs the functions.
      */
     public static void periodic() {
         //Update components

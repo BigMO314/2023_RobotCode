@@ -10,11 +10,19 @@ import frc.robot.subsystem.Chassis;
 import frc.robot.subsystem.Elevator;
 import frc.robot.subsystem.Manipulator;
 
+/**
+ * The Teleoperated Period
+ * <p>
+ * Reads options from the Dashboard to adjust driver control specifics,
+ * allows for driver input to control robot in real time, implements robot
+ * protection safety systems.
+ * @author Tavares Mance
+ * @author Celia Peters
+ */
+@SuppressWarnings("unused")
 public class Teleoperated {
 
-    /**
-     * Chassis power options (precision and boost values included)
-     */
+    /** Chassis power options (precision and boost values included) */
     enum ChassisPower{
         TORTOISE("Tortoise", 0.15, 0.20, 0.25),
         LOW("Low", 0.20, 0.35, 0.50),
@@ -157,6 +165,7 @@ public class Teleoperated {
      * @param powerRight [-1.0 to 1.0] Power to right side of chassis
      */
     public static void setTankDrive(double powerLeft, double powerRight){
+        //Chassis.setDrive(Math.signum(powerLeft) * (powerLeft * powerLeft), Math.signum(powerRight) * (powerRight * powerRight));
         Chassis.setDrive(powerLeft, powerRight);
     }
 
@@ -166,7 +175,7 @@ public class Teleoperated {
      * @param steering [-1.0 to 1.0] Steers. (Left/right)
      */
     public static void setArcadeDrive(double throttle, double steering){
-        Chassis.setDrive(throttle + steering, throttle - steering);
+        setTankDrive(throttle + steering, throttle - steering);
     }
 
 
@@ -182,6 +191,7 @@ public class Teleoperated {
         }
 
         //Apply selected drive mode
+        //FIXME: Apply squaring here
         if (mSelectedDriveMode == DriveMode.ARCADE_DRIVE){
             setArcadeDrive(ctlDriver.getLeftY()*speedMultiplier, ctlDriver.getLeftX()*speedMultiplier);
         } else if (mSelectedDriveMode == DriveMode.CHEEZY_DRIVE){

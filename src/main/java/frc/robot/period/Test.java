@@ -7,6 +7,14 @@ import frc.robot.subsystem.Chassis;
 import frc.robot.subsystem.Elevator;
 import frc.robot.subsystem.Manipulator;
 
+/**
+ * The Test Period
+ * <p>
+ * Allows for basic robot manipulation to test robot systems.
+ * @author Celia Peters
+ * @author Tavares Mance
+ */
+@SuppressWarnings("unused")
 public class Test {
     
     //Network table
@@ -63,9 +71,10 @@ public class Test {
             Chassis.resetAngle();
         }
 
-        //update periodic
+    
+    
         Chassis.periodic();
         Elevator.periodic();
         Manipulator.periodic();
-        }
+    }
 }

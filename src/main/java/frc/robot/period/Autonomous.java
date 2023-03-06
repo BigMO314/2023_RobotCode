@@ -1,5 +1,7 @@
 package frc.robot.period;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -10,10 +12,17 @@ import frc.robot.subsystem.Chassis;
 import frc.robot.subsystem.Elevator;
 import frc.robot.subsystem.Manipulator;
 
+/**
+ * The Autonomous Period
+ * <p>
+ * Reads options from the Dashboard to run various pre-programmed sequences
+ * at the start of the match, free of driver input.
+ * @author Celia Peters
+ * @author Tavares Mance
+ */
+@SuppressWarnings("unused")
 public class Autonomous {
-    /**
-     * Options for starting position
-     */
+    /** Options for starting position */
     private enum StartingPosition{
         WALL("Wall Side"),
         CHARGE_STATION("Charge Station"),
@@ -41,7 +50,7 @@ public class Autonomous {
                         mStage++;
                         break;
                     case 1:
-                        Console.logMsg("Starting Sequence \"" + Sequence.NOTHING.toString() + "\"");
+                        Console.logMsg("Sequence Complete \"" + Sequence.NOTHING.toString() + "\"");
                         mStage++;
                         break;
                     default:
@@ -55,7 +64,107 @@ public class Autonomous {
         },
         JUST_DRIVE("Just Drive"){
             @Override public void run(){
+                switch(mStartingPosition){
+                    case WALL:
+                        switch(mStage){
+                            case 0:
+                                Console.logMsg("Starting Sequence \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.WALL.toString());
+                                mStage++;
+                                break;
+                            case 1:
+                                Console.logMsg("Starting drive forward... \"");
+                                Chassis.setDrive(0.25, 0.25);
+                                tmrStageTimeOut.reset();
+                                mStage++;
+                                break;
+                            case 2:
+                                if(tmrStageTimeOut.get() > 2.0) mStage++;                             
+                                break;
+                            case 3:
+                                Console.logMsg("Time reached. Stopping drive... \"");
+                                Chassis.disable();
+                                mStage++;
+                                break;
+                            case 4:
+                                Console.logMsg("Sequence Complete \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.WALL.toString());
+                                mStage++;
+                                break;
+                            default:
+                                //Disable all Subsystems.
+                                Chassis.disable();
+                                Elevator.disable();
+                                Manipulator.disable();
+                    }
+                        break;
+                    case CHARGE_STATION:
+                        switch(mStage){
+                            case 0:
+                                Console.logMsg("Starting Sequence \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
+                                mStage++;
+                                break;
+                            case 1:
+                                Console.logMsg("Starting drive forward... \"");
+                                Chassis.setDrive(0.25, 0.25);
+                                tmrStageTimeOut.reset();
+                                mStage++;
+                                break;
+                            case 2:
+                                if(tmrStageTimeOut.get() > 2.0) mStage++;                             
+                                break;
+                            case 3:
+                                Console.logMsg("Time reached. Stopping drive... \"");
+                                Chassis.disable();
+                                mStage++;
+                                break;
+                            case 4:
+                                Console.logMsg("Sequence Complete \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
+                                mStage++;
+                                break;
+                            default:
+                                //Disable all Subsystems.
+                                Chassis.disable();
+                                Elevator.disable();
+                                Manipulator.disable();
+                    }
+                        break;
 
+                    case LOADING:
+                        switch(mStage){
+                            case 0:
+                                Console.logMsg("Starting Sequence \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.LOADING.toString());
+                                mStage++;
+                                break;
+                            case 1:
+                                Console.logMsg("Starting drive forward... \"");
+                                Chassis.setDrive(0.25, 0.25);
+                                tmrStageTimeOut.reset();
+                                mStage++;
+                                break;
+                            case 2:
+                                if(tmrStageTimeOut.get() > 1.0) mStage++;                             
+                                break;
+                            case 3:
+                                Console.logMsg("Time reached. Stopping drive... \"");
+                                Chassis.disable();
+                                mStage++;
+                                break;
+                            case 4:
+                                Console.logMsg("Sequence Complete \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.LOADING.toString());
+                                mStage++;
+                                break;
+                            default:
+                                //Disable all Subsystems.
+                                Chassis.disable();
+                                Elevator.disable();
+                                Manipulator.disable();
+                    }
+                        break;
+                    default:
+                        //Disable all Subsystems.
+                        Chassis.disable();
+                        Elevator.disable();
+                        Manipulator.disable();
+                }
             }
         },
         SIMPLE_SCORE("Simple Score"){
@@ -79,7 +188,7 @@ public class Autonomous {
         }
 
         /**Initialization of the sequence. Overide if any additional actions are needed. */
-        public static void init(){
+        public void init(){
             mStage = 0;
             tmrStageTimeOut.start();
             tmrStageTimeOut.reset();
@@ -112,6 +221,10 @@ public class Autonomous {
     public static void init() {
         mStartingPosition = chsStartingPosition.getSelected();
         mSequence = chsSequence.getSelected();
+
+        mSequence.init();
+
+        Chassis.setDriveNeutralMode(NeutralMode.Brake);
     }
 
     /**
@@ -132,7 +245,15 @@ public class Autonomous {
         SmartDashboard.putData("Period/Autonomous/Sequence", chsSequence);
     }
 
+     /**
+     * Runs on a periodic loop that updates values and runs functions
+     * according to human input, autonomus input, and game conditions.
+     */
     public static void periodic() {
-        //TODO: Update subsystems
+        mSequence.run();
+
+        Chassis.periodic();
+        Elevator.periodic();
+        Manipulator.periodic();
     }
 }
