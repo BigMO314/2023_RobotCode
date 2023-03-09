@@ -64,100 +64,83 @@ public class Autonomous {
         },
         JUST_DRIVE("Just Drive"){
             @Override public void run(){
-                switch(mStartingPosition){
-                    case WALL:
-                        switch(mStage){
-                            case 0:
-                                Console.logMsg("Starting Sequence \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.WALL.toString());
-                                mStage++;
-                                break;
-                            case 1:
-                                Console.logMsg("Starting drive forward... \"");
-                                Chassis.setDrive(0.25, 0.25);
-                                tmrStageTimeOut.reset();
-                                mStage++;
-                                break;
-                            case 2:
-                                if(tmrStageTimeOut.get() > 2.0) mStage++;                             
-                                break;
-                            case 3:
-                                Console.logMsg("Time reached. Stopping drive... \"");
-                                Chassis.disable();
-                                mStage++;
-                                break;
-                            case 4:
-                                Console.logMsg("Sequence Complete \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.WALL.toString());
-                                mStage++;
-                                break;
-                            default:
-                                //Disable all Subsystems.
-                                Chassis.disable();
-                                Elevator.disable();
-                                Manipulator.disable();
-                    }
+                switch(mStage){
+                    case 0:
+                        Console.logMsg("Starting Sequence \"" + Sequence.JUST_DRIVE.toString() + "\" - " + mStartingPosition.toString());
+                        mStage++;
                         break;
-                    case CHARGE_STATION:
-                        switch(mStage){
-                            case 0:
-                                Console.logMsg("Starting Sequence \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
-                                mStage++;
-                                break;
-                            case 1:
-                                Console.logMsg("Starting drive forward... \"");
-                                Chassis.setDrive(0.25, 0.25);
-                                tmrStageTimeOut.reset();
-                                mStage++;
-                                break;
-                            case 2:
-                                if(tmrStageTimeOut.get() > 2.0) mStage++;                             
-                                break;
-                            case 3:
-                                Console.logMsg("Time reached. Stopping drive... \"");
-                                Chassis.disable();
-                                mStage++;
-                                break;
-                            case 4:
-                                Console.logMsg("Sequence Complete \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
-                                mStage++;
-                                break;
-                            default:
-                                //Disable all Subsystems.
-                                Chassis.disable();
-                                Elevator.disable();
-                                Manipulator.disable();
-                    }
+                    case 1:
+                        Console.logMsg("Starting drive backward... \"");
+                        if(mStartingPosition != StartingPosition.CHARGE_STATION)
+                            Chassis.setDrive(-0.25, -0.25);
+                        tmrStageTimeOut.reset();
+                        mStage++;
                         break;
-
-                    case LOADING:
-                        switch(mStage){
-                            case 0:
-                                Console.logMsg("Starting Sequence \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.LOADING.toString());
-                                mStage++;
-                                break;
-                            case 1:
-                                Console.logMsg("Starting drive forward... \"");
-                                Chassis.setDrive(0.25, 0.25);
-                                tmrStageTimeOut.reset();
-                                mStage++;
-                                break;
-                            case 2:
-                                if(tmrStageTimeOut.get() > 1.0) mStage++;                             
-                                break;
-                            case 3:
-                                Console.logMsg("Time reached. Stopping drive... \"");
-                                Chassis.disable();
-                                mStage++;
-                                break;
-                            case 4:
-                                Console.logMsg("Sequence Complete \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.LOADING.toString());
-                                mStage++;
-                                break;
-                            default:
-                                //Disable all Subsystems.
-                                Chassis.disable();
-                                Elevator.disable();
-                                Manipulator.disable();
-                    }
+                    case 2:
+                        if(tmrStageTimeOut.get() > 4.0) mStage++;                             
+                        break;
+                    case 3:
+                        Console.logMsg("Time reached. Stopping drive... \"");
+                        Chassis.disable();
+                        mStage++;
+                        break;
+                    case 4:
+                        Console.logMsg("Sequence Complete \"" + Sequence.JUST_DRIVE.toString() + "\" - " + mStartingPosition.toString());
+                        mStage++;
+                        break;
+                    default:
+                        //Disable all Subsystems.
+                        Chassis.disable();
+                        Elevator.disable();
+                        Manipulator.disable();
+                }
+                    
+            }
+        },
+        LOW_SCORE("Low Score"){
+            @Override public void run(){
+                switch(mStage){
+                    case 0:
+                        Console.logMsg("Starting Sequence \"" + Sequence.LOW_SCORE.toString() + "\" - " + mStartingPosition.toString());
+                        mStage++;
+                        break;
+                    case 1:
+                        Console.logMsg("Extending arm... \"");
+                        Manipulator.extendArm();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 2:
+                        if(tmrStageTimeOut.get() > 1.0) mStage++;
+                        break;
+                    case 3:
+                        Console.logMsg("Opening claw and retracting arm... \"");
+                        Manipulator.retractArm();
+                        Manipulator.openGrip();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                    case 4:
+                        if(tmrStageTimeOut.get() > 1.5) mStage++;
+                        break;
+                    case 5:
+                        Console.logMsg("Starting drive backwards and closing grip... \"");
+                        if(mStartingPosition != StartingPosition.CHARGE_STATION)
+                            Chassis.setDrive(-0.25, -0.25);
+                        Manipulator.closeGrip();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 6:
+                        if(tmrStageTimeOut.get() > 4.0) mStage++;                             
+                        break;
+                    case 7:
+                        Console.logMsg("Time reached. Stopping drive... \"");
+                        Chassis.disable();
+                        mStage++;
+                        break;
+                    case 8:
+                        Console.logMsg("Sequence Complete \"" + Sequence.LOW_SCORE.toString() + "\" - " + mStartingPosition.toString());
+                        mStage++;
                         break;
                     default:
                         //Disable all Subsystems.
@@ -167,9 +150,74 @@ public class Autonomous {
                 }
             }
         },
-        SIMPLE_SCORE("Simple Score"){
+        HIGH_SCORE("High Score"){
             @Override public void run(){
-
+                switch(mStage){
+                    case 0:
+                        Console.logMsg("Starting Sequence \"" + Sequence.HIGH_SCORE.toString() + "\" - " + mStartingPosition.toString());
+                        mStage++;
+                        break;
+                    case 1:
+                        Console.logMsg("Elevator to high position... \"");
+                        Elevator.goToHeight(Elevator.Height.HIGH);
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 2:
+                        if(Elevator.isAtHeight() || tmrStageTimeOut.get() > 1.5) mStage++;
+                        break;
+                    case 3:
+                        Console.logMsg("Extending arm... \"");
+                        Manipulator.extendArm();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 4:
+                        if(tmrStageTimeOut.get() > 1.0) mStage++;
+                        break;
+                    case 5:
+                        Console.logMsg("Opening claw and retracting arm... \"");
+                        Manipulator.retractArm();
+                        Manipulator.openGrip();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                    case 6:
+                        if(tmrStageTimeOut.get() > 1.5) mStage++;
+                        break;
+                    case 7:
+                        Console.logMsg("Returning elevator to bottom... \"");
+                        Elevator.goToHeight(Elevator.Height.BOTTOM);
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                    case 8:
+                        if(Elevator.isLiftAtBottom() || tmrStageTimeOut.get() > 2.0) mStage++;
+                        break;
+                    case 9:
+                        Console.logMsg("Starting drive backwards and closing grip... \"");
+                        if(mStartingPosition != StartingPosition.CHARGE_STATION)
+                            Chassis.setDrive(-0.25, -0.25);
+                        Manipulator.closeGrip();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 10:
+                        if(tmrStageTimeOut.get() > 4.0) mStage++;                             
+                        break;
+                    case 11:
+                        Console.logMsg("Time reached. Stopping drive... \"");
+                        Chassis.disable();
+                        mStage++;
+                        break;
+                    case 12:
+                        Console.logMsg("Sequence Complete \"" + Sequence.HIGH_SCORE.toString() + "\" - " + mStartingPosition.toString());
+                        mStage++;
+                        break;
+                    default:
+                        //Disable all Subsystems.
+                        Chassis.disable();
+                        Elevator.disable();
+                        Manipulator.disable();
+                }
             }
         };
 
@@ -225,6 +273,11 @@ public class Autonomous {
         mSequence.init();
 
         Chassis.setDriveNeutralMode(NeutralMode.Brake);
+
+        Chassis.disablePIDs();
+        Elevator.disablePIDs();
+        Manipulator.closeGrip();
+        Manipulator.retractArm();
     }
 
     /**
@@ -234,12 +287,17 @@ public class Autonomous {
         //Push dropdowns to dashboard
         chsStartingPosition.addOption(StartingPosition.LOADING.label, StartingPosition.LOADING);
         chsStartingPosition.addOption(StartingPosition.CHARGE_STATION.label, StartingPosition.CHARGE_STATION);
+        chsStartingPosition.addOption(StartingPosition.WALL.label, StartingPosition.WALL);
+        
         chsStartingPosition.setDefaultOption(StartingPosition.WALL.label, StartingPosition.WALL);
         
         SmartDashboard.putData("Period/Autonomous/Starting Position", chsStartingPosition);
 
-        chsSequence.addOption(Sequence.SIMPLE_SCORE.label, Sequence.SIMPLE_SCORE);
+        chsSequence.addOption(Sequence.NOTHING.label, Sequence.NOTHING);
+        chsSequence.addOption(Sequence.LOW_SCORE.label, Sequence.LOW_SCORE);
+        chsSequence.addOption(Sequence.HIGH_SCORE.label, Sequence.HIGH_SCORE);
         chsSequence.addOption(Sequence.JUST_DRIVE.label, Sequence.JUST_DRIVE);
+
         chsSequence.setDefaultOption(Sequence.NOTHING.label, Sequence.NOTHING);
         
         SmartDashboard.putData("Period/Autonomous/Sequence", chsSequence);

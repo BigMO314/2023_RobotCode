@@ -1,5 +1,7 @@
 package frc.robot.period;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,10 +26,10 @@ public class Teleoperated {
 
     /** Chassis power options (precision and boost values included) */
     enum ChassisPower{
-        TORTOISE("Tortoise", 0.15, 0.20, 0.25),
-        LOW("Low", 0.20, 0.35, 0.50),
-        MEDIUM("Medium", 0.30, 0.65, 0.75),
-        HIGH("High", 0.30, 0.90, 1.0);
+        TORTOISE("Tortoise - 20%", 0.10, 0.20, 0.25),
+        LOW("Low - 50%", 0.10, 0.50, 0.65),
+        MEDIUM("Medium - 65%", 0.10, 0.65, 0.75),
+        HIGH("High - 90%", 0.10, 0.90, 1.0);
         
         public final String label;
         public final double precision;
@@ -75,20 +77,20 @@ public class Teleoperated {
     private static XboxController ctlOperator = new XboxController(1);
 
     //Buttons
-    private static final Button btnElevator_Top = new Button() {
-        @Override public boolean get() { return ctlOperator.getYButton();}
+    private static final Button btnElevator_Bottom = new Button() {
+        @Override public boolean get() { return ctlOperator.getAButton();}
     };
 
-    private static final Button btnElevator_Middle = new Button() {
+    private static final Button btnElevator_Low = new Button() {
         @Override public boolean get() { return ctlOperator.getBButton();}
     };
 
-    private static final Button btnElevator_Portal = new Button() {
+    private static final Button btnElevator_Middle = new Button() {
         @Override public boolean get() { return ctlOperator.getXButton();}
     };
 
-    private static final Button btnElevator_Bottom = new Button() {
-        @Override public boolean get() { return ctlOperator.getAButton();}
+    private static final Button btnElevator_High = new Button() {
+        @Override public boolean get() { return ctlOperator.getYButton();}
     };
 
     private static final Button btnElevator_Up = new Button() {
@@ -100,11 +102,11 @@ public class Teleoperated {
     };
 
     private static final Button btnManipulator_Extend = new Button() {
-        @Override public boolean get() { return ctlOperator.getLeftTrigger();}
+        @Override public boolean get() { return ctlOperator.getRightTrigger();}
     };
 
     private static final Button btnManipulator_Retract = new Button() {
-        @Override public boolean get() { return ctlOperator.getRightTrigger();}
+        @Override public boolean get() { return ctlOperator.getLeftTrigger();}
     };
 
     private static final Button btnManipulator_Open = new Button() {
@@ -123,6 +125,10 @@ public class Teleoperated {
         @Override public boolean get() { return ctlDriver.getRightTrigger();}
     };
 
+    private static final Button btnChassis_Brake = new Button (){
+        @Override public boolean get() { return ctlDriver.getLeftTrigger();}
+    };
+
     //Buffer variables
     private static ChassisPower mSelectedChassisPower;
     private static DriveMode mSelectedDriveMode;
@@ -138,6 +144,11 @@ public class Teleoperated {
     public static void init() {
         mSelectedDriveMode = chsDriveMode.getSelected();
         mSelectedChassisPower = chsChassisPower.getSelected();
+
+        Chassis.disablePIDs();
+        Elevator.disablePIDs();
+        Manipulator.closeGrip();
+        Manipulator.retractArm();
     }
 
     /**
@@ -147,13 +158,17 @@ public class Teleoperated {
         chsChassisPower.addOption(ChassisPower.TORTOISE.label, ChassisPower.TORTOISE);
         chsChassisPower.addOption(ChassisPower.LOW.label, ChassisPower.LOW);
         chsChassisPower.addOption(ChassisPower.MEDIUM.label, ChassisPower.MEDIUM);
-        chsChassisPower.setDefaultOption(ChassisPower.HIGH.label, ChassisPower.HIGH);
+        chsChassisPower.addOption(ChassisPower.HIGH.label, ChassisPower.HIGH);
+
+        chsChassisPower.setDefaultOption(ChassisPower.LOW.label, ChassisPower.LOW);
 
         SmartDashboard.putData("Period/Teleoperated/Chassis Power", chsChassisPower);
         
         chsDriveMode.addOption(DriveMode.ARCADE_DRIVE.label, DriveMode.ARCADE_DRIVE);
         chsDriveMode.addOption(DriveMode.CHEEZY_DRIVE.label, DriveMode.CHEEZY_DRIVE);
-        chsDriveMode.setDefaultOption(DriveMode.TANK_DRIVE.label, DriveMode.TANK_DRIVE);
+        chsDriveMode.addOption(DriveMode.TANK_DRIVE.label, DriveMode.TANK_DRIVE);
+
+        chsDriveMode.setDefaultOption(DriveMode.ARCADE_DRIVE.label, DriveMode.ARCADE_DRIVE);
 
         SmartDashboard.putData("Period/Teleoperated/Drive Mode", chsDriveMode);
     }
@@ -191,31 +206,35 @@ public class Teleoperated {
         }
 
         //Apply selected drive mode
-        //FIXME: Apply squaring here
         if (mSelectedDriveMode == DriveMode.ARCADE_DRIVE){
-            setArcadeDrive(ctlDriver.getLeftY()*speedMultiplier, ctlDriver.getLeftX()*speedMultiplier);
+            setArcadeDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getLeftX())) * (ctlDriver.getLeftX() * ctlDriver.getLeftX()) * speedMultiplier);
         } else if (mSelectedDriveMode == DriveMode.CHEEZY_DRIVE){
-            setArcadeDrive(ctlDriver.getLeftY()*speedMultiplier, ctlDriver.getRightX()*speedMultiplier);
+            setArcadeDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getRightX())) * (ctlDriver.getRightX() * ctlDriver.getRightX()) * speedMultiplier);
         } else {
-            setTankDrive(ctlDriver.getLeftY()*speedMultiplier, ctlDriver.getRightY()*speedMultiplier);
+            setTankDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getRightY())) * (ctlDriver.getRightY() * ctlDriver.getRightY() * ctlDriver.getRightY()) * speedMultiplier);
         }
+
+        if(btnChassis_Brake.get())
+            Chassis.setDriveNeutralMode(NeutralMode.Brake);
+        else
+            Chassis.setDriveNeutralMode(NeutralMode.Coast);
 
         //ELEVATOR
         //TEMPORARY NUMBERS!!!
         if(btnElevator_Up.get()){
             Elevator.disableHeightPID();
-            Elevator.setLiftPower(0.40);
+            Elevator.setLiftPower(0.20);
         } else if(btnElevator_Down.get()){
             Elevator.disableHeightPID();
-            Elevator.setLiftPower(-0.40);
-        } else if(btnElevator_Top.getPressed()){
-            Elevator.goToHeight(Elevator.Height.HIGH);
-        } else if(btnElevator_Middle.getPressed()){
-            Elevator.goToHeight(Elevator.Height.MIDDLE);
-        } else if(btnElevator_Portal.getPressed()){
-            Elevator.goToHeight(Elevator.Height.PORTAL);            
+            Elevator.setLiftPower(-0.20);
         } else if(btnElevator_Bottom.getPressed()){
+            Elevator.goToHeight(Elevator.Height.BOTTOM);
+        } else if(btnElevator_Low.getPressed()){
             Elevator.goToHeight(Elevator.Height.LOW);
+        } else if(btnElevator_Middle.getPressed()){
+            Elevator.goToHeight(Elevator.Height.MID);
+        } else if(btnElevator_High.getPressed()){
+            Elevator.goToHeight(Elevator.Height.HIGH);
         } else {
             Elevator.setLiftPower(0.0);
         }

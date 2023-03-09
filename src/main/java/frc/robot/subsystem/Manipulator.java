@@ -34,7 +34,7 @@ public class Manipulator {
     
     //Set buffer/starting values so nothing goes zoom zoom until its told to zoom zoom
     private static boolean mArmIsExtended = false;
-    private static boolean mGripIsClosed = false;
+    private static boolean mGripIsOpen = false;
 
     //Prevent external changes to Manipulator class
     private Manipulator(){}
@@ -61,11 +61,11 @@ public class Manipulator {
     }
 
     /**
-     * Read whether Grip is closed
-     * @return True is Grip is closed
+     * Read whether Grip is open
+     * @return True is Grip is open
      */
-    public static boolean isGripClosed() {
-        return mGripIsClosed;
+    public static boolean isGripOpen() {
+        return mGripIsOpen;
     }
 
     /**
@@ -78,10 +78,10 @@ public class Manipulator {
 
     /**
      * Sets Grip state (open/closed)
-     * @param gripIsClosed Grip state
+     * @param gripIsOpen Grip state
      */
-    public static void setGripIsClosed(boolean gripIsClosed){
-        mGripIsClosed = gripIsClosed;
+    public static void setGripIsOpen(boolean gripIsOpen){
+        mGripIsOpen = gripIsOpen;
     }
 
     /**
@@ -102,14 +102,14 @@ public class Manipulator {
      * Use pneumatics to open Grip fully
      */
     public static void openGrip(){
-        setGripIsClosed(false);
+        setGripIsOpen(true);
     }
 
     /**
      * Use pneumatics to close Grip fully
      */
     public static void closeGrip(){
-        setGripIsClosed(true);
+        setGripIsOpen(false);
     }
 
     /**
@@ -125,6 +125,6 @@ public class Manipulator {
     public static void periodic() {
         //Update components
         solArm.set(mArmIsExtended);
-        solGrip.set(mGripIsClosed);
+        solGrip.set(mGripIsOpen);
     }
 }

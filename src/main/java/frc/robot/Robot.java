@@ -54,6 +54,10 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         ButtonManager.updateValues();
+        /*Autonomous.pushDashboardValues();
+        Disabled.pushDashboardValues();
+        Teleoperated.pushDashboardValues(); */
+        Test.pushDashboardValues();
         Chassis.pushDashboardValues();
         Elevator.pushDashboardValues();
         Manipulator.pushDashboardValues();

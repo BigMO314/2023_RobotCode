@@ -3,6 +3,8 @@ package frc.robot.period;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import frc.robot.subsystem.Chassis;
+import frc.robot.subsystem.Elevator;
+import frc.robot.subsystem.Manipulator;
 
 /**
  * The Disabled Period
@@ -18,6 +20,11 @@ public class Disabled {
 
     public static void init() {
         Chassis.setDriveNeutralMode(NeutralMode.Coast);
+
+        Chassis.disablePIDs();
+        Elevator.disablePIDs();
+        Manipulator.closeGrip();
+        Manipulator.retractArm();
     }
 
     public static void initDashboard() {

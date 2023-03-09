@@ -26,10 +26,10 @@ import frc.robot.Robot;
      * Preset heights the elevator will go up to. 
      */
     public enum Height {
-        LOW(20.0),
-        MIDDLE(35.0),
-        PORTAL(40.0),
-        HIGH(50.0);
+        BOTTOM(0.0),
+        LOW(15.0),
+        MID(43.0),
+        HIGH(54.0);
 
         public final double height;
         private Height(double position) {
@@ -45,12 +45,14 @@ import frc.robot.Robot;
     private static Entry<Double> entLift_Height = new Entry<Double>(tblElevator, "Lift Height");
     private static Entry<Boolean> entLift_Bottom = new Entry<Boolean>(tblElevator, "Lift Bottom");
     private static Entry<Boolean> entLift_Top = new Entry<Boolean>(tblElevator, "Lift Top");
+    private static Entry<Boolean> entOnTarget = new Entry<Boolean>(tblElevator, "On Target");
 
     //Create the Falcons, PID, and Encoder for the Elevator.
     
     private static WPI_TalonFX mtrLift = new WPI_TalonFX(6);
 
-    private static PIDController pidLift_Height = new PIDController(0.0, 0.0, 0.0);
+    //FIXME: MAKE THIS PRIVATE
+    public static PIDController pidLift_Height = new PIDController(0.25, 0.0, 0.0);
 
     private static MagEncoder encLift = new MagEncoder(mtrLift);
 
@@ -80,13 +82,13 @@ import frc.robot.Robot;
         mtrLift.configReverseSoftLimitEnable(false);
         mtrLift.configForwardSoftLimitEnable(false);
         
-        //Configure Sensors FIXME: Determine Lift distancePerPulse.
-        encLift.configDistancePerPulse(((1.0 / 2048.0) / 16.0) * (1.800 * Math.PI) * 2.0);
+        //Configure Sensors
+        encLift.configDistancePerPulse(((1.0 / 2048.0) / 16.0) * (1.800 * Math.PI) * 2.0 * (53.875 / 54.9));
 
         //Configure PIDS
-        pidLift_Height.setTolerance(0.25);
+        pidLift_Height.setTolerance(0.125);
         pidLift_Height.configAtSetpointTime(0.125);
-        pidLift_Height.configOutputRange(-0.25, 0.25);
+        pidLift_Height.configOutputRange(-0.50, 0.50);
     }
 
     // Initializing dashboard options. 
@@ -100,6 +102,7 @@ import frc.robot.Robot;
         entLift_Height.set(getLiftHeight());
         entLift_Bottom.set(isLiftAtBottom());
         entLift_Top.set(isLiftAtTop());
+        entOnTarget.set(isAtHeight());
     }
 
     /** Reset Lift encoder distance.*/
@@ -154,7 +157,7 @@ import frc.robot.Robot;
      * @return true if elevator is at set height
      */
     public static boolean isAtHeight(){
-        return pidLift_Height.atSetpoint();
+        return pidLift_Height.atSetpoint() && pidLift_Height.isEnabled();
     }
 
     /**

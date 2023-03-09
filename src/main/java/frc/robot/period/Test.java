@@ -1,6 +1,7 @@
 package frc.robot.period;
 
 import edu.wpi.first.networktables.NetworkTable;
+import frc.molib.dashboard.Entry;
 import frc.molib.hid.XboxController;
 import frc.robot.Robot;
 import frc.robot.subsystem.Chassis;
@@ -19,6 +20,7 @@ public class Test {
     
     //Network table
     private static NetworkTable tblTest = Robot.tblPeriod.getSubTable("Test");
+    private static NetworkTable tblElevatorPID = tblTest.getSubTable("Elevator PID");
 
     //Create dashboard entries if necessary
     
@@ -34,24 +36,22 @@ public class Test {
      * Runs once at start of test program
      */
     public static void init() {
+        Chassis.disablePIDs();
+        Elevator.disablePIDs();
+        Manipulator.closeGrip();
+        Manipulator.retractArm();
     }
 
     /**
      * Push dropdowns to dashboard if necessary
      */
     public static void initDashboard() {
-        
+    }
+
+    public static void pushDashboardValues(){
     }
 
     public static void periodic() {
-        //controller drive chassis basic test version
-        if(ctlTester.getRightBumper()){
-            Elevator.setLiftPower(0.25);
-        } else if (ctlTester.getRightTrigger()){
-            Elevator.setLiftPower(-0.25);
-        } else{
-            Elevator.setLiftPower(0.00);
-        }
 
         //controller extend/retract arm simulation to test pneumatics
         if(ctlTester.getAButton()){
@@ -71,7 +71,6 @@ public class Test {
             Chassis.resetAngle();
         }
 
-    
     
         Chassis.periodic();
         Elevator.periodic();

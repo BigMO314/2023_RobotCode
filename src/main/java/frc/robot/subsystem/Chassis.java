@@ -39,8 +39,6 @@ public class Chassis {
     private static PIDController pidDrive_Distance = new PIDController(0.0, 0.0, 0.0);
     private static PIDController pidDrive_Angle = new PIDController(0.0, 0.0, 0.0);
 
-    //TODO: Create Gyro to measure Chassis angle (skip)
-
     //Dashboard Entries
     private static Entry<Double> entDrive_Distance = new Entry<Double>(tblChassis, "Drive Distance");
     private static Entry<Double> entDrive_Speed = new Entry<Double>(tblChassis, "Drive Speed");
