@@ -26,18 +26,20 @@ public class Teleoperated {
 
     /** Chassis power options (precision and boost values included) */
     enum ChassisPower{
-        TORTOISE("Tortoise - 20%", 0.10, 0.20, 0.25),
-        LOW("Low - 50%", 0.10, 0.50, 0.65),
-        MEDIUM("Medium - 65%", 0.10, 0.65, 0.75),
-        HIGH("High - 90%", 0.10, 0.90, 1.0);
+        TORTOISE("Tortoise - 20%", 0.10, 0.20, 0.20, 0.25),
+        LOW("Low - 50%", 0.10, 0.20, 0.50, 0.70),
+        MEDIUM("Medium - 65%", 0.10, 0.20, 0.65, 0.75),
+        HIGH("High - 90%", 0.10, 0.20, 0.90, 1.0);
         
         public final String label;
         public final double precision;
+        public final double slow;
         public final double standard;
         public final double boost;
-        private ChassisPower(String label, double precision, double standard, double boost){
+        private ChassisPower(String label, double precision, double slow, double standard, double boost){
             this.label = label;
             this.precision = precision;
+            this.slow = slow;
             this.standard = standard;
             this.boost = boost;
         }
@@ -121,6 +123,10 @@ public class Teleoperated {
         @Override public boolean get() { return ctlDriver.getRightBumper();}
     };
 
+    private static final Button btnChassis_Slow = new Button() {
+        @Override public boolean get() { return ctlDriver.getLeftBumper();}
+    };
+
     private static final Button btnChassis_Boost = new Button() {
         @Override public boolean get() { return ctlDriver.getRightTrigger();}
     };
@@ -144,6 +150,11 @@ public class Teleoperated {
     public static void init() {
         mSelectedDriveMode = chsDriveMode.getSelected();
         mSelectedChassisPower = chsChassisPower.getSelected();
+
+        btnElevator_Bottom.getPressed();
+        btnElevator_Low.getPressed();
+        btnElevator_Middle.getPressed();
+        btnElevator_High.getPressed();
 
         Chassis.disablePIDs();
         Elevator.disablePIDs();
@@ -201,6 +212,8 @@ public class Teleoperated {
         //Chassis precision and boost buttons (precision slows for minor adjustments, boost accelerates for efficient travel)
         if (btnChassis_Precision.get()){
             speedMultiplier = mSelectedChassisPower.precision;
+        } else if (btnChassis_Slow.get()){
+            speedMultiplier = mSelectedChassisPower.slow;
         } else if (btnChassis_Boost.get()){
             speedMultiplier = mSelectedChassisPower.boost;
         }
@@ -211,7 +224,7 @@ public class Teleoperated {
         } else if (mSelectedDriveMode == DriveMode.CHEEZY_DRIVE){
             setArcadeDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getRightX())) * (ctlDriver.getRightX() * ctlDriver.getRightX()) * speedMultiplier);
         } else {
-            setTankDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getRightY())) * (ctlDriver.getRightY() * ctlDriver.getRightY() * ctlDriver.getRightY()) * speedMultiplier);
+            setTankDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getRightY())) * (ctlDriver.getRightY() * ctlDriver.getRightY()) * speedMultiplier);
         }
 
         if(btnChassis_Brake.get())

@@ -62,6 +62,40 @@ public class Autonomous {
 
             }
         },
+        SPIN("Spin"){
+            @Override public void run(){
+                switch(mStage){
+                    case 0:
+                        Console.logMsg("Starting Sequence \"" + Sequence.SPIN.toString() + "\" - " + mStartingPosition.toString());
+                        mStage++;
+                        break;
+                    case 1:
+                        Console.logMsg("Starting clockwise spin... \"");
+                        Chassis.setDrive(0.35, -0.35);
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 2:
+                        if(tmrStageTimeOut.get() > 0.75) mStage++;                             
+                        break;
+                    case 3:
+                        Console.logMsg("Time reached. Stopping drive... \"");
+                        Chassis.disable();
+                        mStage++;
+                        break;
+                    case 4:
+                        Console.logMsg("Sequence Complete \"" + Sequence.SPIN.toString() + "\" - " + mStartingPosition.toString());
+                        mStage++;
+                        break;
+                    default:
+                        //Disable all Subsystems.
+                        Chassis.disable();
+                        Elevator.disable();
+                        Manipulator.disable();
+                }
+                    
+            }
+        },
         JUST_DRIVE("Just Drive"){
             @Override public void run(){
                 switch(mStage){
@@ -72,12 +106,12 @@ public class Autonomous {
                     case 1:
                         Console.logMsg("Starting drive backward... \"");
                         if(mStartingPosition != StartingPosition.CHARGE_STATION)
-                            Chassis.setDrive(-0.25, -0.25);
+                            Chassis.setDrive(-0.35, -0.35);
                         tmrStageTimeOut.reset();
                         mStage++;
                         break;
                     case 2:
-                        if(tmrStageTimeOut.get() > 4.0) mStage++;                             
+                        if(tmrStageTimeOut.get() > 2.5) mStage++;                             
                         break;
                     case 3:
                         Console.logMsg("Time reached. Stopping drive... \"");
@@ -125,13 +159,13 @@ public class Autonomous {
                     case 5:
                         Console.logMsg("Starting drive backwards and closing grip... \"");
                         if(mStartingPosition != StartingPosition.CHARGE_STATION)
-                            Chassis.setDrive(-0.25, -0.25);
+                            Chassis.setDrive(-0.35, -0.35);
                         Manipulator.closeGrip();
                         tmrStageTimeOut.reset();
                         mStage++;
                         break;
                     case 6:
-                        if(tmrStageTimeOut.get() > 4.0) mStage++;                             
+                        if(tmrStageTimeOut.get() > 2.5) mStage++;                             
                         break;
                     case 7:
                         Console.logMsg("Time reached. Stopping drive... \"");
@@ -195,13 +229,13 @@ public class Autonomous {
                     case 9:
                         Console.logMsg("Starting drive backwards and closing grip... \"");
                         if(mStartingPosition != StartingPosition.CHARGE_STATION)
-                            Chassis.setDrive(-0.25, -0.25);
+                            Chassis.setDrive(-0.35, -0.35);
                         Manipulator.closeGrip();
                         tmrStageTimeOut.reset();
                         mStage++;
                         break;
                     case 10:
-                        if(tmrStageTimeOut.get() > 4.0) mStage++;                             
+                        if(tmrStageTimeOut.get() > 2.5) mStage++;                             
                         break;
                     case 11:
                         Console.logMsg("Time reached. Stopping drive... \"");
@@ -209,6 +243,20 @@ public class Autonomous {
                         mStage++;
                         break;
                     case 12:
+                        Console.logMsg("Starting counterclockwise spin... \"");
+                        Chassis.setDrive(-0.35, 0.35);
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 13:
+                        if(tmrStageTimeOut.get() > 0.75) mStage++;                             
+                        break;
+                    case 14:
+                        Console.logMsg("Time reached. Stopping drive... \"");
+                        Chassis.disable();
+                        mStage++;
+                        break;
+                    case 15:
                         Console.logMsg("Sequence Complete \"" + Sequence.HIGH_SCORE.toString() + "\" - " + mStartingPosition.toString());
                         mStage++;
                         break;
@@ -294,6 +342,7 @@ public class Autonomous {
         SmartDashboard.putData("Period/Autonomous/Starting Position", chsStartingPosition);
 
         chsSequence.addOption(Sequence.NOTHING.label, Sequence.NOTHING);
+        chsSequence.addOption(Sequence.SPIN.label, Sequence.SPIN);
         chsSequence.addOption(Sequence.LOW_SCORE.label, Sequence.LOW_SCORE);
         chsSequence.addOption(Sequence.HIGH_SCORE.label, Sequence.HIGH_SCORE);
         chsSequence.addOption(Sequence.JUST_DRIVE.label, Sequence.JUST_DRIVE);

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -27,6 +29,8 @@ public class Robot extends TimedRobot {
     public static final NetworkTable tblPeriod = tblMain.getSubTable("Period");
     public static final NetworkTable tblSubsystem = tblMain.getSubTable("Subsystem");
 
+    public static UsbCamera camMain;
+
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
@@ -49,6 +53,14 @@ public class Robot extends TimedRobot {
         Chassis.init();
         Elevator.init();
         Manipulator.init();
+
+        try{
+            camMain = CameraServer.startAutomaticCapture("Main Camera", 0);
+            camMain.setFPS(10);
+            camMain.setResolution(128, 80);
+        } finally {
+            //Just ignore camera if it fails
+        }
     }
 
     @Override

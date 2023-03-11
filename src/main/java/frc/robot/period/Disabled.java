@@ -2,6 +2,8 @@ package frc.robot.period;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import frc.molib.buttons.Button;
+import frc.molib.hid.XboxController;
 import frc.robot.subsystem.Chassis;
 import frc.robot.subsystem.Elevator;
 import frc.robot.subsystem.Manipulator;
@@ -17,6 +19,11 @@ public class Disabled {
     //TODO: Create Dashboard Entries
 
     //TODO: Create components
+    private static final XboxController ctlDriver = new XboxController(0);
+
+    private static final Button btnChassis_Brake = new Button(){
+        @Override public boolean get() { return ctlDriver.getLeftTrigger(); }
+    };
 
     public static void init() {
         Chassis.setDriveNeutralMode(NeutralMode.Coast);
@@ -32,6 +39,9 @@ public class Disabled {
     }
 
     public static void periodic() {
-        //TODO: Update subsystems
+        if(btnChassis_Brake.get())
+            Chassis.setDriveNeutralMode(NeutralMode.Brake);
+        else
+            Chassis.setDriveNeutralMode(NeutralMode.Coast);
     }
 }
