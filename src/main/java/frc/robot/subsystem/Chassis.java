@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import frc.molib.PIDController;
 import frc.molib.dashboard.Entry;
 import frc.molib.sensors.MagEncoder;
+import frc.molib.utilities.Console;
 import frc.robot.Robot;
 
 /**
@@ -36,13 +37,16 @@ public class Chassis {
     private static ADXRS450_Gyro gyrDrive = new ADXRS450_Gyro();
 
     //PID Controllers
-    private static PIDController pidDrive_Distance = new PIDController(0.0, 0.0, 0.0);
-    private static PIDController pidDrive_Angle = new PIDController(0.0, 0.0, 0.0);
+    private static PIDController pidDrive_Distance = new PIDController(0.05, 0.0, 0.0);
+    private static PIDController pidDrive_Angle = new PIDController(0.01, 0.0, 0.001);
 
     //Dashboard Entries
     private static Entry<Double> entDrive_Distance = new Entry<Double>(tblChassis, "Drive Distance");
     private static Entry<Double> entDrive_Speed = new Entry<Double>(tblChassis, "Drive Speed");
     private static Entry<Double> entDrive_Angle = new Entry<Double>(tblChassis, "Drive Angle");
+    private static Entry<Boolean> entOn_Target_Distance = new Entry<Boolean>(tblChassis, "On Target Distance");
+    private static Entry<Boolean> entOn_Target_Angle = new Entry<Boolean>(tblChassis, "On Target Angle");
+
 
     //Buffer variables
     private static double mChassisPower_L = 0.0;
@@ -75,27 +79,29 @@ public class Chassis {
         mtrDrive_R2.configReverseSoftLimitEnable(false);
         mtrDrive_R2.configForwardSoftLimitEnable(false);
 
-        //Moter NeutralModes
+        //Motor NeutralModes
         mtrDrive_L1.setNeutralMode(NeutralMode.Coast);
         mtrDrive_L2.setNeutralMode(NeutralMode.Coast);
         mtrDrive_R1.setNeutralMode(NeutralMode.Coast);
         mtrDrive_R2.setNeutralMode(NeutralMode.Coast);
 
         //Configure Encoders
-        encDrive.configDistancePerPulse(((1.0000/(5.8226))/2048.0000)*(4.0000*Math.PI));
+        encDrive.configDistancePerPulse(((1.0000/(5.8226))/2048.0000)*(4.0000*Math.PI)*(180.00/185.56));
         encDrive.reset();
 
         //Configure PIDs
         pidDrive_Distance.setTolerance(0.25);
         pidDrive_Distance.configAtSetpointTime(0.125);
-        pidDrive_Distance.configOutputRange(-1.0, 1.0);
+        pidDrive_Distance.configOutputRange(-0.35, 0.35);
 
-        pidDrive_Angle.setTolerance(5.0);
+        pidDrive_Angle.setTolerance(2.5);
         pidDrive_Angle.configAtSetpointTime(0.125);
-        pidDrive_Angle.configOutputRange(-1.0, 1.0);
+        pidDrive_Angle.configOutputRange(-0.35, 0.35);
 
         //Calibtrate sensors
+        Console.logMsg("Calibrating gyro...");
         gyrDrive.calibrate();
+        Console.logMsg("Calibration complete.");
 
         //Reset sensors
         resetDistance();
@@ -113,6 +119,8 @@ public class Chassis {
         entDrive_Distance.set(encDrive.getDistance());
         entDrive_Speed.set(encDrive.getRate());
         entDrive_Angle.set(gyrDrive.getAngle());
+        entOn_Target_Distance.set(isAtDistance());
+        entOn_Target_Angle.set(isAtAngle());
     }
 
     /** Resetting the distance. */
@@ -161,6 +169,17 @@ public class Chassis {
     }
 
     /**
+     * Set in which the NeutralMode the Drive motors should be in. 
+     * @param mode Mode to set the motors to.
+     */
+    public static void setDriveNeutralMode (NeutralMode modeFront, NeutralMode modeBack){
+        mtrDrive_L1.setNeutralMode(modeFront);
+        mtrDrive_L2.setNeutralMode(modeBack);
+        mtrDrive_R1.setNeutralMode(modeFront);
+        mtrDrive_R2.setNeutralMode(modeBack);
+    }
+
+    /**
      * Set the drive power to the left and right side of the chassis. 
      * @param powerLeft [-1.0, 1.0] Power to the left side of the chassis.
      * @param powerRight [-1.0, 1.0] Power to the right side of the chassis. 
@@ -169,6 +188,8 @@ public class Chassis {
         mChassisPower_L = powerLeft;
         mChassisPower_R = powerRight;
     }
+
+
 
     /** Drive power is disabled.  */
     public static void disableDrive() {
@@ -180,6 +201,8 @@ public class Chassis {
      * @param distance Target distance to drive. 
      */
     public static void goToDistance(double distance){
+        disableAnglePID();
+        resetDistance();
         pidDrive_Distance.setSetpoint(distance);
         pidDrive_Distance.enable();
     }
@@ -204,6 +227,8 @@ public class Chassis {
      * @param angle Target angle to turn. 
      */
     public static void goToAngle(double angle){
+        disableDistancePID();
+        resetAngle();
         pidDrive_Angle.setSetpoint(angle);
         pidDrive_Angle.enable();
     }
@@ -252,8 +277,8 @@ public class Chassis {
         
         //Update components
         mtrDrive_L1.set(ControlMode.PercentOutput, mChassisPower_L);
-        //mtrDrive_L2.set(ControlMode.PercentOutput, mChassisPower_L);
+        mtrDrive_L2.set(ControlMode.PercentOutput, mChassisPower_L);
         mtrDrive_R1.set(ControlMode.PercentOutput, mChassisPower_R);
-        //mtrDrive_R2.set(ControlMode.PercentOutput, mChassisPower_R);
+        mtrDrive_R2.set(ControlMode.PercentOutput, mChassisPower_R);
     }
 }

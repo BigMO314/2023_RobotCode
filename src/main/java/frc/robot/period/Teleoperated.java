@@ -220,9 +220,9 @@ public class Teleoperated {
 
         //Apply selected drive mode
         if (mSelectedDriveMode == DriveMode.ARCADE_DRIVE){
-            setArcadeDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getLeftX())) * (ctlDriver.getLeftX() * ctlDriver.getLeftX()) * speedMultiplier);
+            setArcadeDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getLeftX())) * Math.abs(ctlDriver.getLeftX() * ctlDriver.getLeftX() * ctlDriver.getLeftX()) * speedMultiplier);
         } else if (mSelectedDriveMode == DriveMode.CHEEZY_DRIVE){
-            setArcadeDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getRightX())) * (ctlDriver.getRightX() * ctlDriver.getRightX()) * speedMultiplier);
+            setArcadeDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getRightX())) * Math.abs(ctlDriver.getRightX() * ctlDriver.getRightX()) * speedMultiplier);
         } else {
             setTankDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getRightY())) * (ctlDriver.getRightY() * ctlDriver.getRightY()) * speedMultiplier);
         }
@@ -230,7 +230,7 @@ public class Teleoperated {
         if(btnChassis_Brake.get())
             Chassis.setDriveNeutralMode(NeutralMode.Brake);
         else
-            Chassis.setDriveNeutralMode(NeutralMode.Coast);
+            Chassis.setDriveNeutralMode(NeutralMode.Coast/*, NeutralMode.Brake*/);
 
         //ELEVATOR
         //TEMPORARY NUMBERS!!!

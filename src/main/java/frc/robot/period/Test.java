@@ -1,5 +1,7 @@
 package frc.robot.period;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.networktables.NetworkTable;
 import frc.molib.dashboard.Entry;
 import frc.molib.hid.XboxController;
@@ -25,7 +27,7 @@ public class Test {
     //Create dashboard entries if necessary
     
     //Xbox controllers
-    private static XboxController ctlTester = new XboxController(1);
+    private static XboxController ctlTester = new XboxController(0);
 
     /**
      * Prevent instances of test class
@@ -36,6 +38,8 @@ public class Test {
      * Runs once at start of test program
      */
     public static void init() {
+        Chassis.setDriveNeutralMode(NeutralMode.Brake);
+
         Chassis.disablePIDs();
         Elevator.disablePIDs();
         Manipulator.closeGrip();
@@ -54,24 +58,27 @@ public class Test {
     public static void periodic() {
 
         //controller extend/retract arm simulation to test pneumatics
-        if(ctlTester.getAButton()){
-            Manipulator.extendArm();
-        } else if (ctlTester.getBButton()){
-            Manipulator.retractArm();
-        }
 
         //controller open/close grip simulation to test pneumatics
-        if(ctlTester.getXButton()){
-            Manipulator.openGrip();
-        } else if (ctlTester.getYButton()){
-            Manipulator.closeGrip();
-        }
 
         if(ctlTester.getLeftBumper()){
             Chassis.resetAngle();
         }
 
-    
+        if(ctlTester.getRightBumper()){
+            Chassis.resetDistance();
+        }
+
+        if(ctlTester.getXButtonPressed()){
+            Chassis.resetDistance();
+            Chassis.goToDistance(120.00);
+        }
+
+        if(ctlTester.getAButtonPressed()){
+            Chassis.resetAngle();
+            Chassis.goToAngle(90.00);
+        }
+
         Chassis.periodic();
         Elevator.periodic();
         Manipulator.periodic();
