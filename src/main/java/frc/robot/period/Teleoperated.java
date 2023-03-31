@@ -6,6 +6,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.molib.buttons.Button;
+import frc.molib.buttons.ButtonManager;
 import frc.molib.hid.XboxController;
 import frc.robot.Robot;
 import frc.robot.subsystem.Chassis;
@@ -28,8 +29,8 @@ public class Teleoperated {
     enum ChassisPower{
         TORTOISE("Tortoise - 20%", 0.10, 0.20, 0.20, 0.25),
         LOW("Low - 50%", 0.10, 0.20, 0.50, 0.70),
-        MEDIUM("Medium - 65%", 0.10, 0.20, 0.65, 0.75),
-        HIGH("High - 90%", 0.10, 0.20, 0.90, 1.0);
+        MEDIUM("Medium - 70%", 0.10, 0.20, 0.70, 0.85),
+        HIGH("High - 90%", 0.10, 0.20, 0.90, 1.00);
         
         public final String label;
         public final double precision;
@@ -116,7 +117,23 @@ public class Teleoperated {
     };
 
     private static final Button btnManipulator_Close = new Button() {
-    @Override public boolean get() { return ctlOperator.getLeftBumper();}
+        @Override public boolean get() { return ctlOperator.getLeftBumper();}
+    };
+
+    private static final Button btnRollers_In = new Button() {
+        @Override public boolean get() { return ctlOperator.getLeftY() < -.10;}
+    };
+
+    private static final Button btnRollers_Out = new Button() {
+        @Override public boolean get() { return ctlOperator.getLeftY() > .10;}
+    };
+    
+    private static final Button btnRollers_EnableConstant = new Button() {
+        @Override public boolean get() { return ctlOperator.getStartButton(); }
+    };
+    
+    private static final Button btnRollers_DisableConstant = new Button() {
+        @Override public boolean get() { return ctlOperator.getBackButton(); }
     };
 
     private static final Button btnChassis_Precision = new Button() {
@@ -135,6 +152,14 @@ public class Teleoperated {
         @Override public boolean get() { return ctlDriver.getLeftTrigger();}
     };
 
+    private static final Button btnChassis_Lineup_F = new Button (){
+        @Override public boolean get() { return ctlDriver.getBButton();}
+    };
+
+    private static final Button btnChassis_Lineup_B = new Button (){
+        @Override public boolean get() { return ctlDriver.getAButton();}
+    };
+
     //Buffer variables
     private static ChassisPower mSelectedChassisPower;
     private static DriveMode mSelectedDriveMode;
@@ -151,15 +176,10 @@ public class Teleoperated {
         mSelectedDriveMode = chsDriveMode.getSelected();
         mSelectedChassisPower = chsChassisPower.getSelected();
 
-        btnElevator_Bottom.getPressed();
-        btnElevator_Low.getPressed();
-        btnElevator_Middle.getPressed();
-        btnElevator_High.getPressed();
+        Disabled.setBreakTimerEnabled(false);
 
-        Chassis.disablePIDs();
-        Elevator.disablePIDs();
-        Manipulator.closeGrip();
-        Manipulator.retractArm();
+        ButtonManager.clearFlags();
+        
     }
 
     /**
@@ -171,15 +191,15 @@ public class Teleoperated {
         chsChassisPower.addOption(ChassisPower.MEDIUM.label, ChassisPower.MEDIUM);
         chsChassisPower.addOption(ChassisPower.HIGH.label, ChassisPower.HIGH);
 
-        chsChassisPower.setDefaultOption(ChassisPower.LOW.label, ChassisPower.LOW);
+        chsChassisPower.setDefaultOption(ChassisPower.MEDIUM.label, ChassisPower.MEDIUM);
 
         SmartDashboard.putData("Period/Teleoperated/Chassis Power", chsChassisPower);
         
-        chsDriveMode.addOption(DriveMode.ARCADE_DRIVE.label, DriveMode.ARCADE_DRIVE);
         chsDriveMode.addOption(DriveMode.CHEEZY_DRIVE.label, DriveMode.CHEEZY_DRIVE);
         chsDriveMode.addOption(DriveMode.TANK_DRIVE.label, DriveMode.TANK_DRIVE);
+        chsDriveMode.addOption(DriveMode.ARCADE_DRIVE.label, DriveMode.ARCADE_DRIVE);
 
-        chsDriveMode.setDefaultOption(DriveMode.ARCADE_DRIVE.label, DriveMode.ARCADE_DRIVE);
+        chsDriveMode.setDefaultOption(DriveMode.CHEEZY_DRIVE.label, DriveMode.CHEEZY_DRIVE);
 
         SmartDashboard.putData("Period/Teleoperated/Drive Mode", chsDriveMode);
     }
@@ -227,11 +247,18 @@ public class Teleoperated {
             setTankDrive(Math.signum(ctlDriver.getLeftY()) * (ctlDriver.getLeftY() * ctlDriver.getLeftY()) * speedMultiplier, (Math.signum(ctlDriver.getRightY())) * (ctlDriver.getRightY() * ctlDriver.getRightY()) * speedMultiplier);
         }
 
-        if(btnChassis_Brake.get())
+        if(btnChassis_Brake.get() || btnChassis_Lineup_F.get() || btnChassis_Lineup_B.get()){
             Chassis.setDriveNeutralMode(NeutralMode.Brake);
-        else
+        } else {
             Chassis.setDriveNeutralMode(NeutralMode.Coast/*, NeutralMode.Brake*/);
+        }
 
+        if(btnChassis_Lineup_F.get()){
+            Chassis.setDrive(.075, .075);
+        } else if(btnChassis_Lineup_B.get()){
+            Chassis.setDrive(-.075, -.075);
+        }
+        
         //ELEVATOR
         //TEMPORARY NUMBERS!!!
         if(btnElevator_Up.get()){
@@ -264,6 +291,21 @@ public class Teleoperated {
         } else if(btnManipulator_Close.getPressed()){
             Manipulator.closeGrip();
         }
+
+        /*if(btnRollers_EnableConstant.getPressed()) {
+            Manipulator.enableConstantRoller();
+        } else if(btnRollers_DisableConstant.getPressed() || btnRollers_In.getPressed() || btnRollers_Out.getPressed()) {
+            Manipulator.disableConstantRoller();
+        }
+
+        if(btnRollers_In.get()){
+            Manipulator.inRoller();
+        } else if(btnRollers_Out.get()){
+            Manipulator.outRoller();
+        } else {
+            Manipulator.disableRoller();
+        }*/
+
 
         //Update subsystems
         Chassis.periodic();

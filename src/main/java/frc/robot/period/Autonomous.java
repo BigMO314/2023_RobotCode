@@ -3,6 +3,8 @@ package frc.robot.period;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -97,20 +99,31 @@ public class Autonomous {
                                 mStage++;
                                 break;
                             case 1:
+                                Console.logMsg("Waiting...");
+                                tmrStageTimeOut.reset();
+                                mStage++;
+                                break;
+                            case 2:
+                            //FIXME: Make this an actual time
+                                if(tmrStageTimeOut.get() > 0.0){
+                                    mStage++;
+                                };
+                                break;
+                            case 3:
                                 Console.logMsg("Starting drive backward...");
                                 Chassis.goToDistance(mChargeBalanceDistance);
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
-                            case 2:
+                            case 4:
                                 if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 2.5) mStage++;                             
                                 break;
-                            case 3:
+                            case 5:
                                 Console.logMsg("Time reached. Stopping drive...");
                                 Chassis.disable();
                                 mStage++;
                                 break;
-                            case 4:
+                            case 6:
                                 Console.logMsg("Sequence Complete \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
                                 mStage++;
                                 break;
@@ -202,7 +215,11 @@ public class Autonomous {
                                 break;
                             case 9:
                                 Console.logMsg("Distance reached. Starting turn...");
-                                Chassis.goToAngle(-168.00);
+                                if (mAlliance == Alliance.Red){
+                                    Chassis.goToAngle(-168.00);
+                                } else {
+                                    Chassis.goToAngle(168.00);
+                                }
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -275,20 +292,31 @@ public class Autonomous {
                                 if(tmrStageTimeOut.get() > 1.0) mStage++;
                                 break;
                             case 7:
+                                Console.logMsg("Waiting...");
+                                tmrStageTimeOut.reset();
+                                mStage++;
+                                break;
+                            case 8:
+                            //FIXME: Make this an actual time
+                                if(tmrStageTimeOut.get() > 0.0){
+                                    mStage++;
+                                };
+                                break;
+                            case 9:
                                 Console.logMsg("Starting drive backwards to park...");
                                 Chassis.goToDistance(mChargeBalanceDistance);
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
-                            case 8:
+                            case 10:
                                 if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 5.0) mStage++;                             
                                 break;
-                            case 9:
+                            case 11:
                                 Console.logMsg("Distance reached. Stopping drive...");
                                 Chassis.disable();
                                 mStage++;
                                 break;
-                            case 10:
+                            case 12:
                                 Console.logMsg("Sequence Complete \"" + Sequence.LOW_SCORE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
                                 mStage++;
                                 break;
@@ -341,7 +369,11 @@ public class Autonomous {
                                 break;
                             case 9:
                                 Console.logMsg("Distance reached. Starting turn...");
-                                Chassis.goToAngle(168.00);
+                                if (mAlliance == Alliance.Red){
+                                    Chassis.goToAngle(168.00);
+                                } else {
+                                    Chassis.goToAngle(-168.00);
+                                }
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -443,7 +475,11 @@ public class Autonomous {
                                 break;
                             case 11:
                                 Console.logMsg("Distance reached. Starting turn...");
-                                Chassis.goToAngle(-180.00);
+                                if (mAlliance == Alliance.Red){
+                                    Chassis.goToAngle(180.00);
+                                } else {
+                                    Chassis.goToAngle(-180.00);
+                                }
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -525,21 +561,32 @@ public class Autonomous {
                                 if(Elevator.isLiftAtBottom() || tmrStageTimeOut.get() > 2.0) mStage++;
                                 break;
                             case 9:
+                                Console.logMsg("Waiting...");
+                                tmrStageTimeOut.reset();
+                                mStage++;
+                                break;
+                            case 10:
+                            //FIXME: Make this an actual time
+                                if(tmrStageTimeOut.get() > 4.0){
+                                    mStage++;
+                                };
+                                break;
+                            case 11:
                                 Console.logMsg("Starting drive backwards to park and closing grip...");
                                 Chassis.goToDistance(mChargeBalanceDistance);
                                 Manipulator.closeGrip();
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
-                            case 10:
+                            case 12:
                                 if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 5.0) mStage++;                             
                                 break;
-                            case 11:
+                            case 13:
                                 Console.logMsg("Distance reached. Stopping drive...");
                                 Chassis.disable();
                                 mStage++;
                                 break;
-                            case 12:
+                            case 14:
                                 Console.logMsg("Sequence Complete \"" + Sequence.HIGH_SCORE_CUBE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
                                 mStage++;
                                 break;
@@ -601,7 +648,11 @@ public class Autonomous {
                                 break;
                             case 11:
                                 Console.logMsg("Distance reached. Starting turn...");
-                                Chassis.goToAngle(180.00);
+                                if (mAlliance == Alliance.Red){
+                                    Chassis.goToAngle(180.00);
+                                } else {
+                                    Chassis.goToAngle(-180.00);
+                                }
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -667,7 +718,7 @@ public class Autonomous {
                                 if(Elevator.isAtHeight() || tmrStageTimeOut.get() > 1.5) mStage++;
                                 break;
                             case 3:
-                                Console.logMsg("Extending arm... \"");
+                                Console.logMsg("Extending arm...");
                                 Manipulator.extendArm();
                                 tmrStageTimeOut.reset();
                                 mStage++;
@@ -676,7 +727,7 @@ public class Autonomous {
                                 if(tmrStageTimeOut.get() > 1.0) mStage++;
                                 break;
                             case 5:
-                                Console.logMsg("Opening claw and retracting arm... \"");
+                                Console.logMsg("Opening claw and retracting arm...");
                                 Manipulator.retractArm();
                                 Manipulator.openGrip();
                                 tmrStageTimeOut.reset();
@@ -685,7 +736,7 @@ public class Autonomous {
                                 if(tmrStageTimeOut.get() > 1.5) mStage++;
                                 break;
                             case 7:
-                                Console.logMsg("Returning elevator to bottom... \"");
+                                Console.logMsg("Returning elevator to bottom...");
                                 Elevator.goToHeight(Elevator.Height.BOTTOM);
                                 tmrStageTimeOut.reset();
                                 mStage++;
@@ -704,7 +755,11 @@ public class Autonomous {
                                 break;
                             case 11:
                                 Console.logMsg("Distance reached. Starting turn...");
-                                Chassis.goToAngle(-168.00);
+                                if (mAlliance == Alliance.Red){
+                                    Chassis.goToAngle(-168.00);
+                                } else {
+                                    Chassis.goToAngle(168.00);
+                                }
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -786,21 +841,32 @@ public class Autonomous {
                                 if(Elevator.isLiftAtBottom() || tmrStageTimeOut.get() > 2.0) mStage++;
                                 break;
                             case 9:
+                                Console.logMsg("Waiting...");
+                                tmrStageTimeOut.reset();
+                                mStage++;
+                                break;
+                            case 10:
+                            //FIXME: Make this an actual time
+                                if(tmrStageTimeOut.get() > 0.0){
+                                    mStage++;
+                                };
+                                break;
+                            case 11:
                                 Console.logMsg("Starting drive backwards to park and closing grip...");
                                 Chassis.goToDistance(mChargeBalanceDistance);
                                 Manipulator.closeGrip();
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
-                            case 10:
+                            case 12:
                                 if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 5.0) mStage++;                             
                                 break;
-                            case 11:
+                            case 13:
                                 Console.logMsg("Distance reached. Stopping drive...");
                                 Chassis.disable();
                                 mStage++;
                                 break;
-                            case 12:
+                            case 14:
                                 Console.logMsg("Sequence Complete \"" + Sequence.HIGH_SCORE_CONE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
                                 mStage++;
                                 break;
@@ -862,7 +928,11 @@ public class Autonomous {
                                 break;
                             case 11:
                                 Console.logMsg("Distance reached. Starting turn...");
-                                Chassis.goToAngle(168.00);
+                                if (mAlliance == Alliance.Red){
+                                    Chassis.goToAngle(168.00);
+                                } else {
+                                    Chassis.goToAngle(-168.00);
+                                }
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -950,6 +1020,7 @@ public class Autonomous {
     //Components
     private static StartingPosition mStartingPosition;
     private static Sequence mSequence;
+    private static Alliance mAlliance;
 
     /** Prevent instances of autonomous class */
     private Autonomous(){}
@@ -961,15 +1032,13 @@ public class Autonomous {
     public static void init() {
         mStartingPosition = chsStartingPosition.getSelected();
         mSequence = chsSequence.getSelected();
+        mAlliance = DriverStation.getAlliance();
 
         mSequence.init();
 
         Chassis.setDriveNeutralMode(NeutralMode.Brake);
 
-        Chassis.disablePIDs();
-        Elevator.disablePIDs();
-        Manipulator.closeGrip();
-        Manipulator.retractArm();
+        Disabled.setBreakTimerEnabled(true);
     }
 
     /**
@@ -990,7 +1059,6 @@ public class Autonomous {
         chsSequence.addOption(Sequence.LOW_SCORE.label, Sequence.LOW_SCORE);
         chsSequence.addOption(Sequence.HIGH_SCORE_CUBE.label, Sequence.HIGH_SCORE_CUBE);
         chsSequence.addOption(Sequence.HIGH_SCORE_CONE.label, Sequence.HIGH_SCORE_CONE);
-
 
         chsSequence.setDefaultOption(Sequence.NOTHING.label, Sequence.NOTHING);
         

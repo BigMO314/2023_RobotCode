@@ -40,10 +40,7 @@ public class Test {
     public static void init() {
         Chassis.setDriveNeutralMode(NeutralMode.Brake);
 
-        Chassis.disablePIDs();
-        Elevator.disablePIDs();
-        Manipulator.closeGrip();
-        Manipulator.retractArm();
+        Disabled.setBreakTimerEnabled(false);
     }
 
     /**

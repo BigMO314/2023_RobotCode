@@ -29,7 +29,7 @@ import frc.robot.Robot;
         BOTTOM(0.0),
         LOW(15.0),
         MID(43.0),
-        HIGH(54.0);
+        HIGH(54.5);
 
         public final double height;
         private Height(double position) {
@@ -52,7 +52,7 @@ import frc.robot.Robot;
     private static WPI_TalonFX mtrLift = new WPI_TalonFX(6);
 
     //FIXME: MAKE THIS PRIVATE
-    public static PIDController pidLift_Height = new PIDController(0.25, 0.0, 0.0);
+    public static PIDController pidLift_Height = new PIDController(0.25, 0.00, 0.00);
 
     private static MagEncoder encLift = new MagEncoder(mtrLift);
 
@@ -88,7 +88,7 @@ import frc.robot.Robot;
         //Configure PIDS
         pidLift_Height.setTolerance(0.125);
         pidLift_Height.configAtSetpointTime(0.125);
-        pidLift_Height.configOutputRange(-0.50, 0.50);
+        pidLift_Height.configOutputRange(-0.45, 0.50);
     }
 
     // Initializing dashboard options. 
