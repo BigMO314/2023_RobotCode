@@ -26,10 +26,10 @@ import frc.robot.Robot;
      * Preset heights the elevator will go up to. 
      */
     public enum Height {
-        BOTTOM(0.0),
+        BOTTOM(0.5),
         LOW(15.0),
         MID(43.0),
-        HIGH(54.5);
+        HIGH(54.0);
 
         public final double height;
         private Height(double position) {
@@ -88,7 +88,7 @@ import frc.robot.Robot;
         //Configure PIDS
         pidLift_Height.setTolerance(0.125);
         pidLift_Height.configAtSetpointTime(0.125);
-        pidLift_Height.configOutputRange(-0.45, 0.50);
+        pidLift_Height.configOutputRange(-0.60, 0.75);
     }
 
     // Initializing dashboard options. 

@@ -26,19 +26,16 @@ public class Manipulator {
     //Creates components (motor and solenoid)
     private static Solenoid solArm = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
     private static Solenoid solGrip = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
-    //private static WPI_VictorSPX mtrRollers = new WPI_VictorSPX(7);
     
     //Set buffer/starting values so nothing goes zoom zoom until its told to zoom zoom
     private static boolean mArmIsExtended = false;
     private static boolean mGripIsOpen = false;
-    //private static boolean mIsConstantRollerEnabled = false;
-    private static double mRollerPower = 0.0; 
 
     //Prevent external changes to Manipulator class
     private Manipulator(){}
 
     public static void init() {
-        //mtrRollers.setNeutralMode(NeutralMode.Brake);
+        
     }
 
     public static void initDashboard() {
@@ -110,48 +107,19 @@ public class Manipulator {
         setGripIsOpen(false);
     }
 
-    /*
-    public static void setRollerPower(double power){
-        mRollerPower = power;
-    }
-
-    public static void inRoller() {
-        setRollerPower(0.6);
-    }
-
-    public static void outRoller() {
-        setRollerPower(-0.5);
-    }
-
-    public static void disableRoller() {
-        setRollerPower(0.0);
-    }
-
-    public static void enableConstantRoller() {
-        mIsConstantRollerEnabled = true;
-    }
-
-    public static void disableConstantRoller() {
-        mIsConstantRollerEnabled = false;
-    }
-    */
-
     /**
      * Placeholder disable all components
      */
     public static void disable(){
-        /*disableRoller();*/
+        
     }
 
     /**
      *Values are updated and runs the functions.
      */
     public static void periodic() {
-        //if(mIsConstantRollerEnabled) setRollerPower(0.25);
-
         //Update components
         solArm.set(mArmIsExtended);
         solGrip.set(mGripIsOpen);
-        //mtrRollers.set(mRollerPower);
     }
 }

@@ -119,16 +119,10 @@ public class Autonomous {
                                 if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 2.5) mStage++;                             
                                 break;
                             case 5:
-                                Console.logMsg("Time reached. Stopping drive...");
-                                Chassis.disable();
-                                mStage++;
-                                break;
-                            case 6:
                                 Console.logMsg("Sequence Complete \"" + Sequence.JUST_DRIVE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
                                 mStage++;
                                 break;
                             default:
-                                Chassis.disable();
                                 Elevator.disable();
                                 Manipulator.disable();
                         } break;
@@ -237,7 +231,7 @@ public class Autonomous {
                                 break;
                             case 13:
                                 Console.logMsg("Starting drive forward...");
-                                Chassis.goToDistance(6.00);
+                                Chassis.goToDistance(24.00);
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -312,16 +306,10 @@ public class Autonomous {
                                 if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 5.0) mStage++;                             
                                 break;
                             case 11:
-                                Console.logMsg("Distance reached. Stopping drive...");
-                                Chassis.disable();
-                                mStage++;
-                                break;
-                            case 12:
                                 Console.logMsg("Sequence Complete \"" + Sequence.LOW_SCORE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
                                 mStage++;
                                 break;
                             default:
-                                Chassis.disable();
                                 Elevator.disable();
                                 Manipulator.disable();
                         } break;
@@ -391,7 +379,7 @@ public class Autonomous {
                                 break;
                             case 13:
                                 Console.logMsg("Starting drive forward...");
-                                Chassis.goToDistance(6.00);
+                                Chassis.goToDistance(24.00);
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -447,17 +435,21 @@ public class Autonomous {
                                 if(tmrStageTimeOut.get() > 1.0) mStage++;
                                 break;
                             case 5:
-                                Console.logMsg("Opening claw and retracting arm... \"");
+                                Console.logMsg("Starting drive backwards, opening claw, retracting arm...");
+                                Chassis.resetDistance();
                                 Manipulator.retractArm();
                                 Manipulator.openGrip();
+                                Chassis.setDrive(-.15, -.15);
                                 tmrStageTimeOut.reset();
                                 mStage++;
+                                break;
                             case 6:
-                                if(tmrStageTimeOut.get() > 1.5) mStage++;
+                                if(tmrStageTimeOut.get() > .5) mStage++;                             
                                 break;
                             case 7:
                                 Console.logMsg("Returning elevator to bottom... \"");
                                 Elevator.goToHeight(Elevator.Height.BOTTOM);
+                                Chassis.disable();
                                 tmrStageTimeOut.reset();
                                 mStage++;
                             case 8:
@@ -465,7 +457,7 @@ public class Autonomous {
                                 break;
                             case 9:
                                 Console.logMsg("Starting drive backwards and closing grip...");
-                                Chassis.goToDistance(mWallReverseDistance);
+                                Chassis.goToDistance(mWallReverseDistance - Chassis.getDistance());
                                 Manipulator.closeGrip();
                                 tmrStageTimeOut.reset();
                                 mStage++;
@@ -498,7 +490,7 @@ public class Autonomous {
                                 break;
                             case 15:
                                 Console.logMsg("Starting drive forward...");
-                                Chassis.goToDistance(6.00);
+                                Chassis.goToDistance(24.00);
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -544,17 +536,21 @@ public class Autonomous {
                                 if(tmrStageTimeOut.get() > 1.0) mStage++;
                                 break;
                             case 5:
-                                Console.logMsg("Opening claw and retracting arm... \"");
+                                Console.logMsg("Starting drive backwards, opening claw, retracting arm...");
+                                Chassis.resetDistance();
                                 Manipulator.retractArm();
                                 Manipulator.openGrip();
+                                Chassis.setDrive(-.15, -.15);
                                 tmrStageTimeOut.reset();
                                 mStage++;
+                                break;
                             case 6:
-                                if(tmrStageTimeOut.get() > 1.5) mStage++;
+                                if(tmrStageTimeOut.get() > .5) mStage++;                             
                                 break;
                             case 7:
                                 Console.logMsg("Returning elevator to bottom... \"");
                                 Elevator.goToHeight(Elevator.Height.BOTTOM);
+                                Chassis.disable();
                                 tmrStageTimeOut.reset();
                                 mStage++;
                             case 8:
@@ -573,7 +569,7 @@ public class Autonomous {
                                 break;
                             case 11:
                                 Console.logMsg("Starting drive backwards to park and closing grip...");
-                                Chassis.goToDistance(mChargeBalanceDistance);
+                                Chassis.goToDistance(mChargeBalanceDistance - Chassis.getDistance());
                                 Manipulator.closeGrip();
                                 tmrStageTimeOut.reset();
                                 mStage++;
@@ -582,16 +578,10 @@ public class Autonomous {
                                 if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 5.0) mStage++;                             
                                 break;
                             case 13:
-                                Console.logMsg("Distance reached. Stopping drive...");
-                                Chassis.disable();
-                                mStage++;
-                                break;
-                            case 14:
                                 Console.logMsg("Sequence Complete \"" + Sequence.HIGH_SCORE_CUBE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
                                 mStage++;
                                 break;
                             default:
-                                Chassis.disable();
                                 Elevator.disable();
                                 Manipulator.disable();
                         } break;
@@ -620,17 +610,21 @@ public class Autonomous {
                                 if(tmrStageTimeOut.get() > 1.0) mStage++;
                                 break;
                             case 5:
-                                Console.logMsg("Opening claw and retracting arm... \"");
+                                Console.logMsg("Starting drive backwards, opening claw, retracting arm...");
+                                Chassis.resetDistance();
                                 Manipulator.retractArm();
                                 Manipulator.openGrip();
+                                Chassis.setDrive(-.15, -.15);
                                 tmrStageTimeOut.reset();
                                 mStage++;
+                                break;
                             case 6:
-                                if(tmrStageTimeOut.get() > 1.5) mStage++;
+                                if(tmrStageTimeOut.get() > .5) mStage++;                             
                                 break;
                             case 7:
                                 Console.logMsg("Returning elevator to bottom... \"");
                                 Elevator.goToHeight(Elevator.Height.BOTTOM);
+                                Chassis.disable();
                                 tmrStageTimeOut.reset();
                                 mStage++;
                             case 8:
@@ -638,7 +632,7 @@ public class Autonomous {
                                 break;
                             case 9:
                                 Console.logMsg("Starting drive backwards and closing grip...");
-                                Chassis.goToDistance(mLoadingReverseDistance);
+                                Chassis.goToDistance(mLoadingReverseDistance - Chassis.getDistance());
                                 Manipulator.closeGrip();
                                 tmrStageTimeOut.reset();
                                 mStage++;
@@ -671,7 +665,7 @@ public class Autonomous {
                                 break;
                             case 15:
                                 Console.logMsg("Starting drive forward...");
-                                Chassis.goToDistance(6.00);
+                                Chassis.goToDistance(24.00);
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -692,6 +686,118 @@ public class Autonomous {
                                 Elevator.disable();
                                 Manipulator.disable();
                         } break;
+                    default:
+                        Chassis.disable();
+                        Elevator.disable();
+                        Manipulator.disable();
+                }
+            }
+        },
+        MOVE_LIKE_A_FOOT("Move like a foot"){
+            @Override public void run() {
+                switch(mStage){ 
+                    case 0:
+                        Console.logMsg("Starting Sequence \"" + Sequence.HIGH_SCORE_CONE.toString() + "\" - " + StartingPosition.WALL.toString());
+                        mStage++;
+                        break;
+                    case 1:
+                        Console.logMsg("Elevator to high position...");
+                        Chassis.resetDistance();
+                        Elevator.goToHeight(Elevator.Height.HIGH);
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 2:
+                        if(Elevator.isAtHeight() || tmrStageTimeOut.get() > 1.5) mStage++;
+                        break;
+                    case 3:
+                        Console.logMsg("Extending arm...");
+                        Manipulator.extendArm();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 4:
+                        if(tmrStageTimeOut.get() > 1.0) mStage++;
+                        break;
+                    case 5:
+                        Console.logMsg("Starting drive backwards...");
+                        Chassis.resetDistance();
+                        Chassis.setDrive(-.15, -.15);
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 6:
+                        if(tmrStageTimeOut.get() > .5) mStage++;                             
+                        break;
+                    case 7:
+                        Console.logMsg("Opening claw and retracting arm...");
+                        Chassis.disable();
+                        Manipulator.retractArm();
+                        Manipulator.openGrip();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                    case 8:
+                        if(tmrStageTimeOut.get() > 1.5) mStage++;
+                        break;
+                    case 9:
+                        Console.logMsg("Returning elevator to bottom...");
+                        Elevator.goToHeight(Elevator.Height.BOTTOM);
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                    case 10:
+                        if(Elevator.isLiftAtBottom() || tmrStageTimeOut.get() > 2.0) mStage++;
+                        break;
+                    case 11:
+                        Console.logMsg("Starting drive backwards and closing grip...");
+                        Chassis.goToDistance(mWallReverseDistance - Chassis.getDistance());
+                        Manipulator.closeGrip();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 12:
+                        if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 3.0) mStage++;                             
+                        break;
+                    case 13:
+                        Console.logMsg("Distance reached. Starting turn...");
+                        if (mAlliance == Alliance.Red){
+                            Chassis.goToAngle(-168.00);
+                        } else {
+                            Chassis.goToAngle(168.00);
+                        }
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 14:
+                        if(Chassis.isAtAngle() || tmrStageTimeOut.get() > 3.0) mStage++;                             
+                        break;
+                    case 15:
+                        Console.logMsg("Angle reached. Opening claw and extending arm...");
+                        Manipulator.openGrip();
+                        Manipulator.extendArm();
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 16:
+                        if(tmrStageTimeOut.get() > 1.0) mStage++;                             
+                        break;
+                    case 17:
+                        Console.logMsg("Starting drive forward...");
+                        Chassis.goToDistance(24.00);
+                        tmrStageTimeOut.reset();
+                        mStage++;
+                        break;
+                    case 18:
+                        if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 1.0) mStage++;                             
+                        break;
+                    case 19:
+                        Console.logMsg("Distance reached. Stopping drive...");
+                        Chassis.disable();
+                        mStage++;
+                        break;
+                    case 20:
+                        Console.logMsg("Sequence Complete \"" + Sequence.HIGH_SCORE_CONE.toString() + "\" - " + StartingPosition.WALL.toString());
+                        mStage++;
+                        break;
                     default:
                         Chassis.disable();
                         Elevator.disable();
@@ -727,17 +833,21 @@ public class Autonomous {
                                 if(tmrStageTimeOut.get() > 1.0) mStage++;
                                 break;
                             case 5:
-                                Console.logMsg("Opening claw and retracting arm...");
+                                Console.logMsg("Starting drive backwards, opening claw, retracting arm...");
+                                Chassis.resetDistance();
                                 Manipulator.retractArm();
                                 Manipulator.openGrip();
+                                Chassis.setDrive(-.15, -.15);
                                 tmrStageTimeOut.reset();
                                 mStage++;
+                                break;
                             case 6:
-                                if(tmrStageTimeOut.get() > 1.5) mStage++;
+                                if(tmrStageTimeOut.get() > .5) mStage++;                             
                                 break;
                             case 7:
                                 Console.logMsg("Returning elevator to bottom...");
                                 Elevator.goToHeight(Elevator.Height.BOTTOM);
+                                Chassis.disable();
                                 tmrStageTimeOut.reset();
                                 mStage++;
                             case 8:
@@ -745,7 +855,7 @@ public class Autonomous {
                                 break;
                             case 9:
                                 Console.logMsg("Starting drive backwards and closing grip...");
-                                Chassis.goToDistance(mWallReverseDistance);
+                                Chassis.goToDistance(mWallReverseDistance  - Chassis.getDistance());
                                 Manipulator.closeGrip();
                                 tmrStageTimeOut.reset();
                                 mStage++;
@@ -778,7 +888,7 @@ public class Autonomous {
                                 break;
                             case 15:
                                 Console.logMsg("Starting drive forward...");
-                                Chassis.goToDistance(6.00);
+                                Chassis.goToDistance(24.00);
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -823,18 +933,22 @@ public class Autonomous {
                             case 4:
                                 if(tmrStageTimeOut.get() > 1.0) mStage++;
                                 break;
-                            case 5:
-                                Console.logMsg("Opening claw and retracting arm... \"");
+                                case 5:
+                                Console.logMsg("Starting drive backwards, opening claw, retracting arm...");
+                                Chassis.resetDistance();
                                 Manipulator.retractArm();
                                 Manipulator.openGrip();
+                                Chassis.setDrive(-.15, -.15);
                                 tmrStageTimeOut.reset();
                                 mStage++;
+                                break;
                             case 6:
-                                if(tmrStageTimeOut.get() > 1.5) mStage++;
+                                if(tmrStageTimeOut.get() > .5) mStage++;                             
                                 break;
                             case 7:
                                 Console.logMsg("Returning elevator to bottom... \"");
                                 Elevator.goToHeight(Elevator.Height.BOTTOM);
+                                Chassis.disable();
                                 tmrStageTimeOut.reset();
                                 mStage++;
                             case 8:
@@ -853,7 +967,7 @@ public class Autonomous {
                                 break;
                             case 11:
                                 Console.logMsg("Starting drive backwards to park and closing grip...");
-                                Chassis.goToDistance(mChargeBalanceDistance);
+                                Chassis.goToDistance(mChargeBalanceDistance - Chassis.getDistance());
                                 Manipulator.closeGrip();
                                 tmrStageTimeOut.reset();
                                 mStage++;
@@ -862,16 +976,10 @@ public class Autonomous {
                                 if(Chassis.isAtDistance() || tmrStageTimeOut.get() > 5.0) mStage++;                             
                                 break;
                             case 13:
-                                Console.logMsg("Distance reached. Stopping drive...");
-                                Chassis.disable();
-                                mStage++;
-                                break;
-                            case 14:
                                 Console.logMsg("Sequence Complete \"" + Sequence.HIGH_SCORE_CONE.toString() + "\" - " + StartingPosition.CHARGE_STATION.toString());
                                 mStage++;
                                 break;
                             default:
-                                Chassis.disable();
                                 Elevator.disable();
                                 Manipulator.disable();
                         } break;
@@ -900,17 +1008,21 @@ public class Autonomous {
                                 if(tmrStageTimeOut.get() > 1.0) mStage++;
                                 break;
                             case 5:
-                                Console.logMsg("Opening claw and retracting arm... \"");
+                                Console.logMsg("Starting drive backwards...");
+                                Chassis.resetDistance();
                                 Manipulator.retractArm();
                                 Manipulator.openGrip();
+                                Chassis.setDrive(-.15, -.15);
                                 tmrStageTimeOut.reset();
                                 mStage++;
+                                break;
                             case 6:
-                                if(tmrStageTimeOut.get() > 1.5) mStage++;
+                                if(tmrStageTimeOut.get() > .5) mStage++;                             
                                 break;
                             case 7:
                                 Console.logMsg("Returning elevator to bottom... \"");
                                 Elevator.goToHeight(Elevator.Height.BOTTOM);
+                                Chassis.disable();
                                 tmrStageTimeOut.reset();
                                 mStage++;
                             case 8:
@@ -918,7 +1030,7 @@ public class Autonomous {
                                 break;
                             case 9:
                                 Console.logMsg("Starting drive backwards and closing grip...");
-                                Chassis.goToDistance(mLoadingReverseDistance);
+                                Chassis.goToDistance(mLoadingReverseDistance - Chassis.getDistance());
                                 Manipulator.closeGrip();
                                 tmrStageTimeOut.reset();
                                 mStage++;
@@ -951,7 +1063,7 @@ public class Autonomous {
                                 break;
                             case 15:
                                 Console.logMsg("Starting drive forward...");
-                                Chassis.goToDistance(6.00);
+                                Chassis.goToDistance(24.00);
                                 tmrStageTimeOut.reset();
                                 mStage++;
                                 break;
@@ -973,7 +1085,7 @@ public class Autonomous {
                                 Manipulator.disable();
                         } break;
                     default:
-                        Chassis.disable();
+                        Chassis.disableDrive();
                         Elevator.disable();
                         Manipulator.disable();
                 }
@@ -1059,6 +1171,7 @@ public class Autonomous {
         chsSequence.addOption(Sequence.LOW_SCORE.label, Sequence.LOW_SCORE);
         chsSequence.addOption(Sequence.HIGH_SCORE_CUBE.label, Sequence.HIGH_SCORE_CUBE);
         chsSequence.addOption(Sequence.HIGH_SCORE_CONE.label, Sequence.HIGH_SCORE_CONE);
+        chsSequence.addOption(Sequence.MOVE_LIKE_A_FOOT.label, Sequence.MOVE_LIKE_A_FOOT);
 
         chsSequence.setDefaultOption(Sequence.NOTHING.label, Sequence.NOTHING);
         

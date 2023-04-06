@@ -29,7 +29,7 @@ public class Teleoperated {
     enum ChassisPower{
         TORTOISE("Tortoise - 20%", 0.10, 0.20, 0.20, 0.25),
         LOW("Low - 50%", 0.10, 0.20, 0.50, 0.70),
-        MEDIUM("Medium - 70%", 0.10, 0.20, 0.70, 0.85),
+        MEDIUM("Medium - 80%", 0.10, 0.20, 0.80, 0.90),
         HIGH("High - 90%", 0.10, 0.20, 0.90, 1.00);
         
         public final String label;
@@ -120,22 +120,6 @@ public class Teleoperated {
         @Override public boolean get() { return ctlOperator.getLeftBumper();}
     };
 
-    private static final Button btnRollers_In = new Button() {
-        @Override public boolean get() { return ctlOperator.getLeftY() < -.10;}
-    };
-
-    private static final Button btnRollers_Out = new Button() {
-        @Override public boolean get() { return ctlOperator.getLeftY() > .10;}
-    };
-    
-    private static final Button btnRollers_EnableConstant = new Button() {
-        @Override public boolean get() { return ctlOperator.getStartButton(); }
-    };
-    
-    private static final Button btnRollers_DisableConstant = new Button() {
-        @Override public boolean get() { return ctlOperator.getBackButton(); }
-    };
-
     private static final Button btnChassis_Precision = new Button() {
         @Override public boolean get() { return ctlDriver.getRightBumper();}
     };
@@ -153,11 +137,11 @@ public class Teleoperated {
     };
 
     private static final Button btnChassis_Lineup_F = new Button (){
-        @Override public boolean get() { return ctlDriver.getBButton();}
+        @Override public boolean get() { return ctlDriver.getPOV() == 0; }
     };
 
     private static final Button btnChassis_Lineup_B = new Button (){
-        @Override public boolean get() { return ctlDriver.getAButton();}
+        @Override public boolean get() { return ctlDriver.getPOV() == 180; }
     };
 
     //Buffer variables
@@ -291,21 +275,6 @@ public class Teleoperated {
         } else if(btnManipulator_Close.getPressed()){
             Manipulator.closeGrip();
         }
-
-        /*if(btnRollers_EnableConstant.getPressed()) {
-            Manipulator.enableConstantRoller();
-        } else if(btnRollers_DisableConstant.getPressed() || btnRollers_In.getPressed() || btnRollers_Out.getPressed()) {
-            Manipulator.disableConstantRoller();
-        }
-
-        if(btnRollers_In.get()){
-            Manipulator.inRoller();
-        } else if(btnRollers_Out.get()){
-            Manipulator.outRoller();
-        } else {
-            Manipulator.disableRoller();
-        }*/
-
 
         //Update subsystems
         Chassis.periodic();
