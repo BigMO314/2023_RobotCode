@@ -28,7 +28,7 @@ import frc.robot.Robot;
     public enum Height {
         BOTTOM(0.5),
         LOW(15.0),
-        MID(43.0),
+        MID(43.25),
         HIGH(54.0);
 
         public final double height;
